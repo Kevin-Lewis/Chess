@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitboard.h" />
+    <ClInclude Include="position_constants.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{34C6D643-95AD-46FF-982B-942DE7C87EE1}</ProjectGuid>

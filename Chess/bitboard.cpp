@@ -1,2 +1,4 @@
 #include "bitboard.h"
-#include <string>
+#include "position_constants.h"
+
+BitBoard::BitBoard(){}
