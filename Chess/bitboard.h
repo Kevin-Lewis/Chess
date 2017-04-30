@@ -4,6 +4,7 @@ class BitBoard{
 public:
 	BitBoard();
 
+	void NewBoard();
 
 	//BitBoard Getters
 	long long GetAllPieces() const { return all_pieces; }
@@ -26,6 +27,8 @@ public:
 
 private:
 	typedef long long board;
+
+	void UpdateBoardSets();
 
 	//White Pieces
 	board white_pawns;
