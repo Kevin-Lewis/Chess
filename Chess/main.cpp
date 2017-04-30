@@ -1,13 +1,18 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include "bitboard.h"
 
 int main()
 {
+	BitBoard Board;
+	Board.NewBoard();
+	Board.PrintBoard();
+	/*
 	std::string Line;
 	int flag = 0;
 	std::ofstream cmdLog;
-	cmdLog.open("log.txt");
+	cmdLog.open("C:/Users/Kevin/Desktop/log.txt");
 
 	std::cout.setf(std::ios::unitbuf); //Makes sure that the outputs are sent immediately to the GUI
 
@@ -51,5 +56,6 @@ int main()
 		}
 	}
 	cmdLog.close();
+	*/
 	return 0;
 }

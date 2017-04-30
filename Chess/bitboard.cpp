@@ -1,25 +1,26 @@
+#include <iostream>
 #include "bitboard.h"
 #include "position_constants.h"
 
 //Creates empty board
 BitBoard::BitBoard(){
-	white_pawns = 0ULL;
-	white_knights = 0ULL;
-	white_bishops = 0ULL;
-	white_rooks = 0ULL;
-	white_queen = 0ULL;
-	white_king = 0ULL;
+	white_pawns = 0LL;
+	white_knights = 0LL;
+	white_bishops = 0LL;
+	white_rooks = 0LL;
+	white_queen = 0LL;
+	white_king = 0LL;
 
-	black_pawns = 0ULL;
-	black_knights = 0ULL;
-	black_bishops = 0ULL;
-	black_rooks = 0ULL;
-	black_queen = 0ULL;
-	black_king = 0ULL;
+	black_pawns = 0LL;
+	black_knights = 0LL;
+	black_bishops = 0LL;
+	black_rooks = 0LL;
+	black_queen = 0LL;
+	black_king = 0LL;
 
-	white_pieces = 0ULL;
-	black_pieces = 0ULL;
-	all_pieces = 0ULL;
+	white_pieces = 0LL;
+	black_pieces = 0LL;
+	all_pieces = 0LL;
 }
 
 //Creates a board with all pieces in their starting positions
@@ -41,6 +42,45 @@ void BitBoard::NewBoard() {
 	black_king = POS_H5;
 
 	UpdateBoardSets();
+}
+
+void BitBoard::PrintBoard() {
+	int count = 0;
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if (white_pawns & 1LL << count)
+				std::cout << "P    ";
+			else if (white_knights & 1LL << count)
+				std::cout << "N    ";
+			else if (white_bishops & 1LL << count)
+				std::cout << "B    ";
+			else if (white_rooks & 1LL << count)
+				std::cout << "R    ";
+			else if (white_queen & 1LL << count)
+				std::cout << "Q    ";
+			else if (white_king & 1LL << count)
+				std::cout << "K    ";
+
+			else if (black_pawns & 1LL << count)
+				std::cout << "p    ";
+			else if (black_knights & 1LL << count)
+				std::cout << "n    ";
+			else if (black_bishops & 1LL << count)
+				std::cout << "b    ";
+			else if (black_rooks & 1LL << count)
+				std::cout << "r    ";
+			else if (black_queen & 1LL << count)
+				std::cout << "q    ";
+			else if (black_king & 1LL << count)
+				std::cout << "k    ";
+			
+			else
+				std::cout << "-    ";
+
+			++count;
+		}
+		std::cout << std::endl << std::endl;
+	}
 }
 
 //Updates the the bitboards containing multiple pieces
