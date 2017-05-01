@@ -77,7 +77,6 @@ void BitBoard::PrintBoard(std::ofstream& file) {
 			
 			else
 				file << "-    ";
-
 			++count;
 		}
 		file << std::endl << std::endl;
@@ -87,8 +86,13 @@ void BitBoard::PrintBoard(std::ofstream& file) {
 
 //Executes move from 4 char string
 void BitBoard::ExecuteMove(std::string move) {
+
+	//If there is only one move to process
+	if (move.find("oves") != std::string::npos)
+		return;
+
 	std::string pos = move.substr(0, 2);
-	std::string newpos = move.substr(2, 3);
+	std::string newpos = move.substr(2, 2);
 
 	//Converts string move to integer values
 	int col1 = (pos[0] - 96);
@@ -100,7 +104,97 @@ void BitBoard::ExecuteMove(std::string move) {
 	long long start = (((row1 - 1) * 8) + col1) - 1;
 	long long end = (((row2 - 1) * 8) + col2) - 1;
 
-	
+	//Destroys piece at current end location if any
+	if (all_pieces & 1LL << end) {
+		if (white_pawns & 1LL << end) {
+			white_pawns ^= 1LL << end;
+		}
+		else if (white_knights & 1LL << end) {
+			white_knights ^= 1LL << end;
+		}
+		else if (white_bishops & 1LL << end) {
+			white_bishops ^= 1LL << end;
+		}
+		else if (white_rooks & 1LL << end) {
+			white_rooks ^= 1LL << end;
+		}
+		else if (white_queen & 1LL << end) {
+			white_queen ^= 1LL << end;
+		}
+		else if (white_king & 1LL << end) {
+			white_king ^= 1LL << end;
+		}
+		else if (black_pawns & 1LL << end) {
+			black_pawns ^= 1LL << end;
+		}
+		else if (black_knights & 1LL << end) {
+			black_knights ^= 1LL << end;
+		}
+		else if (black_bishops & 1LL << end) {
+			black_bishops ^= 1LL << end;
+		}
+		else if (black_rooks & 1LL << end) {
+			black_rooks ^= 1LL << end;
+		}
+		else if (black_queen & 1LL << end) {
+			black_queen ^= 1LL << end;
+		}
+		else if (black_king & 1LL << end) {
+			black_king ^= 1LL << end;
+		}
+	}
+
+	//Checks which piece is moving and executes the move
+	if (white_pawns & 1LL << start) {
+		white_pawns ^= 1LL << start;
+		white_pawns |= 1LL << end;
+	}	
+	else if (white_knights & 1LL << start) {
+		white_knights ^= 1LL << start;
+		white_knights |= 1LL << end;
+	}	
+	else if (white_bishops & 1LL << start) {
+		white_bishops ^= 1LL << start;
+		white_bishops |= 1LL << end;
+	}	
+	else if (white_rooks & 1LL << start) {
+		white_rooks ^= 1LL << start;
+		white_rooks |= 1LL << end;
+	}	
+	else if (white_queen & 1LL << start) {
+		white_queen ^= 1LL << start;
+		white_queen |= 1LL << end;
+	}	
+	else if (white_king & 1LL << start) {
+		white_king ^= 1LL << start;
+		white_king |= 1LL << end;
+	}		
+	else if (black_pawns & 1LL << start) {
+		black_pawns ^= 1LL << start;
+		black_pawns |= 1LL << end;
+	}		
+	else if (black_knights & 1LL << start) {
+		black_knights ^= 1LL << start;
+		black_knights |= 1LL << end;
+	}		
+	else if (black_bishops & 1LL << start) {
+		black_bishops ^= 1LL << start;
+		black_bishops |= 1LL << end;
+	}		
+	else if (black_rooks & 1LL << start) {
+		black_rooks ^= 1LL << start;
+		black_rooks |= 1LL << end;
+	}		
+	else if (black_queen & 1LL << start) {
+		black_queen ^= 1LL << start;
+		black_queen |= 1LL << end;
+	}		
+	else if (black_king & 1LL << start) {
+		black_king ^= 1LL << start;
+		black_king |= 1LL << end;
+	}
+
+	UpdateBoardSets();
 }
 
 

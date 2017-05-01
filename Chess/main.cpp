@@ -6,22 +6,19 @@
 int main()
 {
 	BitBoard Board;
-	Board.NewBoard();	
-	Board.ExecuteMove("b8c6");
+	Board.NewBoard();
 	std::string Line;
 	int flag = 0;
 	std::ofstream cmdLog;
 	std::ofstream boardOutput;
 	cmdLog.open("C:/Users/Kevin/Desktop/log.txt");
 	boardOutput.open("C:/Users/Kevin/Desktop/output.txt");
-
+	
 	std::cout.setf(std::ios::unitbuf); //Makes sure that the outputs are sent immediately to the GUI
 
 	while (std::getline(std::cin, Line)) {
 		//Write to Files
 		cmdLog << Line << std::endl;
-		Board.PrintBoard(boardOutput);
-
 		if (Line == "uci") {
 			std::cout << "Kevin-Engine" << std::endl; //Engine Name
 			std::cout << "Kevin Lewis" << std::endl; //Author Name
@@ -39,8 +36,12 @@ int main()
 		}
 
 		if (Line.substr(0, 24) == "position startpos moves ") {
-			std::string move = Line.substr(Line.size() - 4);
-			Board.ExecuteMove(move);
+			std::string moveW = Line.substr(Line.size() - 4);
+			std::string moveB = Line.substr(Line.size() - 9, 4);
+			Board.ExecuteMove(moveB);
+			Board.PrintBoard(boardOutput);
+			Board.ExecuteMove(moveW);
+			Board.PrintBoard(boardOutput);
 		}
 		else if (Line == "stop") {
 			; // nothing
@@ -58,6 +59,7 @@ int main()
 			//Output: Moves Black Knight to C6
 		}
 	}
+	Board.PrintBoard(boardOutput);
 	cmdLog.close();
 	boardOutput.close();
 	return 0;
