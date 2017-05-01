@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "bitboard.h"
 #include "position_constants.h"
 
@@ -44,44 +45,64 @@ void BitBoard::NewBoard() {
 	UpdateBoardSets();
 }
 
-void BitBoard::PrintBoard() {
+void BitBoard::PrintBoard(std::ofstream& file) {
 	int count = 0;
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (white_pawns & 1LL << count)
-				std::cout << "P    ";
+				file << "P    ";
 			else if (white_knights & 1LL << count)
-				std::cout << "N    ";
+				file << "N    ";
 			else if (white_bishops & 1LL << count)
-				std::cout << "B    ";
+				file << "B    ";
 			else if (white_rooks & 1LL << count)
-				std::cout << "R    ";
+				file << "R    ";
 			else if (white_queen & 1LL << count)
-				std::cout << "Q    ";
+				file << "Q    ";
 			else if (white_king & 1LL << count)
-				std::cout << "K    ";
+				file << "K    ";
 
 			else if (black_pawns & 1LL << count)
-				std::cout << "p    ";
+				file << "p    ";
 			else if (black_knights & 1LL << count)
-				std::cout << "n    ";
+				file << "n    ";
 			else if (black_bishops & 1LL << count)
-				std::cout << "b    ";
+				file << "b    ";
 			else if (black_rooks & 1LL << count)
-				std::cout << "r    ";
+				file << "r    ";
 			else if (black_queen & 1LL << count)
-				std::cout << "q    ";
+				file << "q    ";
 			else if (black_king & 1LL << count)
-				std::cout << "k    ";
+				file << "k    ";
 			
 			else
-				std::cout << "-    ";
+				file << "-    ";
 
 			++count;
 		}
-		std::cout << std::endl << std::endl;
+		file << std::endl << std::endl;
 	}
+	file << "_____________________________________" << std::endl;
 }
+
+//Executes move from 4 char string
+void BitBoard::ExecuteMove(std::string move) {
+	std::string pos = move.substr(0, 2);
+	std::string newpos = move.substr(2, 3);
+
+	//Converts string move to integer values
+	int col1 = (pos[0] - 96);
+	int col2 = (newpos[0] - 96);
+	int row1 = pos[1] - 48;
+	int row2 = newpos[1] - 48;
+
+	//starting location on bitboard and ending location
+	long long start = (((row1 - 1) * 8) + col1) - 1;
+	long long end = (((row2 - 1) * 8) + col2) - 1;
+
+	
+}
+
 
 //Updates the the bitboards containing multiple pieces
 void BitBoard::UpdateBoardSets() {

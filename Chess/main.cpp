@@ -6,19 +6,21 @@
 int main()
 {
 	BitBoard Board;
-	Board.NewBoard();
-	Board.PrintBoard();
-	/*
+	Board.NewBoard();	
+	Board.ExecuteMove("b8c6");
 	std::string Line;
 	int flag = 0;
 	std::ofstream cmdLog;
+	std::ofstream boardOutput;
 	cmdLog.open("C:/Users/Kevin/Desktop/log.txt");
+	boardOutput.open("C:/Users/Kevin/Desktop/output.txt");
 
 	std::cout.setf(std::ios::unitbuf); //Makes sure that the outputs are sent immediately to the GUI
 
 	while (std::getline(std::cin, Line)) {
-		//Write to File
+		//Write to Files
 		cmdLog << Line << std::endl;
+		Board.PrintBoard(boardOutput);
 
 		if (Line == "uci") {
 			std::cout << "Kevin-Engine" << std::endl; //Engine Name
@@ -36,8 +38,9 @@ int main()
 			; // nothing
 		}
 
-		if (Line.substr(0, 23) == "position startpos moves ") {
-			; // nothing
+		if (Line.substr(0, 24) == "position startpos moves ") {
+			std::string move = Line.substr(Line.size() - 4);
+			Board.ExecuteMove(move);
 		}
 		else if (Line == "stop") {
 			; // nothing
@@ -56,6 +59,6 @@ int main()
 		}
 	}
 	cmdLog.close();
-	*/
+	boardOutput.close();
 	return 0;
 }

@@ -1,12 +1,15 @@
 #ifndef BITBOARD_H
 #define BITBOARD_H
+#include <iostream>
 class BitBoard{
 public:
 	BitBoard();
 
 	void NewBoard();
 
-	void PrintBoard();
+	void PrintBoard(std::ofstream& file);
+
+	void ExecuteMove(std::string move);
 
 	//BitBoard Getters
 	unsigned long long GetAllPieces() const { return all_pieces; }
