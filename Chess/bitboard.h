@@ -60,6 +60,7 @@ private:
 	//Other Boards
 	board all_pieces;
 	board all_pawns;
+	board all_knights;
 	board empty_board;
 	board white_pieces;
 	board black_pieces;

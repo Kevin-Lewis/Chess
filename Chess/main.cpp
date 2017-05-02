@@ -31,7 +31,7 @@ int main()
 			std::cout << "readyok" << std::endl;
 		}
 		else if (Line == "ucinewgame") {
-			; // nothing
+			Board.NewBoard();
 		}
 
 		if (Line.substr(0, 24) == "position startpos moves ") {
@@ -49,8 +49,8 @@ int main()
 			; // nothing
 		}
 		else if (Line.substr(0, 3) == "go ") {
-			// Received a command like: "go wtime 300000 btime 300000 winc 0 binc 0"
 			std::string move = Board.SelectMove();
+			cmdLog << "best move: " << move << std::endl;
 			std::cout << "bestmove " << move << std::endl;
 		}
 	}

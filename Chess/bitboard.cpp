@@ -27,20 +27,20 @@ BitBoard::BitBoard(){
 //Creates a board with all pieces in their starting positions
 void BitBoard::NewBoard() {
 	//Place the white pieces.
-	white_pawns = ROW_B;
-	white_knights = POS_A2 | POS_A7;
-	white_bishops = POS_A3 | POS_A6;
-	white_rooks = POS_A1 | POS_A8;
-	white_queen = POS_A4;
-	white_king = POS_A5;
+	white_pawns = ROW_2;
+	white_knights = POS_B1 | POS_G1;
+	white_bishops = POS_C1 | POS_F1;
+	white_rooks = POS_A1 | POS_H1;
+	white_queen = POS_D1;
+	white_king = POS_E1;
 
 	//Place the black pieces.
-	black_pawns = ROW_G;
-	black_knights = POS_H2 | POS_H7;
-	black_bishops = POS_H3 | POS_H6;
-	black_rooks = POS_H1 | POS_H8;
-	black_queen = POS_H4;
-	black_king = POS_H5;
+	black_pawns = ROW_7;
+	black_knights = POS_B8 | POS_G8;
+	black_bishops = POS_C8 | POS_F8;
+	black_rooks = POS_A8 | POS_H8;
+	black_queen = POS_D8;
+	black_king = POS_E8;
 
 	UpdateBoardSets();
 
@@ -215,6 +215,7 @@ void BitBoard::UpdateBoardSets() {
 	black_pieces = black_pawns | black_knights | black_bishops | black_rooks | black_queen | black_king;
 
 	all_pawns = white_pawns | black_pawns;
+	all_knights = white_knights | black_knights;
 
 	all_pieces = white_pieces | black_pieces;
 
@@ -225,23 +226,36 @@ void BitBoard::UpdateBoardSets() {
 long long BitBoard::FindMoves(short piece) {
 	board movable_squares = empty_board;
 	board opposite_color;
+	board engine_color;
 	int colMod;
 
 	//check engine color
 	isWhite ? colMod = 1 : colMod = -1;
 
 	//Check which color piece is being searched
-	if (white_pieces & 1LL << piece)
+	if (white_pieces & 1LL << piece) {
+		engine_color = white_pieces;
 		opposite_color = black_pieces;
-	else
+	}
+	else {
+		engine_color = black_pieces;
 		opposite_color = white_pieces;
-	
+	}
 	//pawns
 	if (all_pawns & 1LL << piece) {
-		movable_squares = (1LL << (piece + (8 * colMod)) & ~(opposite_color))
+		movable_squares = (1LL << (piece + (8 * colMod)) & ~(all_pieces))
 						| (opposite_color & 1LL << (piece + (7 * colMod)))
 						| (opposite_color & 1LL << (piece + (9 * colMod)));
 	}
+
+	//knights
+	if (all_knights & 1LL << piece) {
+		movable_squares = ((1LL << (piece - 6) & ~(engine_color)) & ~((1LL << piece & COL_G | 1LL << piece & COL_H | 1LL << piece & ROW_1))) | ((1LL << (piece + 6) & ~(engine_color)) & ~((1LL << piece & COL_A | 1LL << piece & COL_B | 1LL << piece & ROW_8)))
+			| ((1LL << (piece - 10) & ~(engine_color)) & ~((1LL << piece & COL_A | 1LL << piece & COL_B | 1LL << piece & ROW_1))) | ((1LL << (piece + 10) & ~(engine_color)) & ~((1LL << piece & COL_G | 1LL << piece & COL_H | 1LL << piece & ROW_8)))
+			| ((1LL << (piece - 15) & ~(engine_color)) & ~((1LL << piece & ROW_1 | 1LL << piece & ROW_2 | 1LL << piece & COL_H))) | ((1LL << (piece + 15) & ~(engine_color)) & ~((1LL << piece & ROW_7 | 1LL << piece & ROW_8 | 1LL << piece & COL_A)))
+			| ((1LL << (piece - 17) & ~(engine_color)) & ~((1LL << piece & ROW_1 | 1LL << piece & ROW_2 | 1LL << piece & COL_A))) | ((1LL << (piece + 17) & ~(engine_color)) & ~((1LL << piece & ROW_7 | 1LL << piece & ROW_8 | 1LL << piece & COL_H)));
+	}
+
 	return movable_squares;
 }
 
@@ -262,12 +276,12 @@ std::string BitBoard::SelectMove() {
 				if (movePool & (1LL << i)) {
 					bestMove = i;
 					startPos = piece;
-					found == 1;
+					found = 1;
 				}
 			}
 		}
 	}
-	//Converts integer values to ascii values (FORMULAS NEED RE-EVALUATED)
+	//Converts integer values to ascii values
 	int col1 = ((startPos + 8) % 8) + 1;
 	int row1 = (startPos / 8) + 1;
 	int col2 = ((bestMove + 8) % 8) + 1;
