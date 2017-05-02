@@ -8,19 +8,18 @@ int main()
 	BitBoard Board;
 	Board.NewBoard();
 	std::string Line;
-	int flag = 0;
 	std::ofstream cmdLog;
 	std::ofstream boardOutput;
 	cmdLog.open("C:/Users/Kevin/Desktop/log.txt");
 	boardOutput.open("C:/Users/Kevin/Desktop/output.txt");
 	
 	std::cout.setf(std::ios::unitbuf); //Makes sure that the outputs are sent immediately to the GUI
-
+	
 	while (std::getline(std::cin, Line)) {
 		//Write to Files
 		cmdLog << Line << std::endl;
 		if (Line == "uci") {
-			std::cout << "Kevin-Engine" << std::endl; //Engine Name
+			std::cout << "Zip Engine" << std::endl; //Engine Name
 			std::cout << "Kevin Lewis" << std::endl; //Author Name
 			std::cout << "uciok" << std::endl; //Enables UCI
 		}
@@ -43,23 +42,18 @@ int main()
 			Board.ExecuteMove(moveW);
 			Board.PrintBoard(boardOutput);
 		}
+		else if (Line == "startpos") {
+			Board.setColor(true);
+		}
 		else if (Line == "stop") {
 			; // nothing
 		}
 		else if (Line.substr(0, 3) == "go ") {
 			// Received a command like: "go wtime 300000 btime 300000 winc 0 binc 0"
-			if (flag == 0) {
-				std::cout << "bestmove " << "b8c6" << std::endl;
-				flag = 1;
-			}
-			else {
-				std::cout << "bestmove " << "c6b8" << std::endl;
-				flag = 0;
-			}
-			//Output: Moves Black Knight to C6
+			std::string move = Board.SelectMove();
+			std::cout << "bestmove " << move << std::endl;
 		}
 	}
-	Board.PrintBoard(boardOutput);
 	cmdLog.close();
 	boardOutput.close();
 	return 0;

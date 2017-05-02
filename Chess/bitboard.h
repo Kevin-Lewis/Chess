@@ -9,6 +9,8 @@ public:
 
 	void PrintBoard(std::ofstream& file);
 
+	std::string SelectMove();
+
 	void ExecuteMove(std::string move);
 
 	//BitBoard Getters
@@ -30,10 +32,14 @@ public:
 	long long GetBlackQueen() const { return black_queen; }
 	long long GetBlackKing() const { return black_king; }
 
+	void setColor(bool White) { isWhite = White; }
+
 private:
-	typedef unsigned long long board;
+	typedef long long board;
 
 	void UpdateBoardSets();
+
+	long long FindMoves(short piece);
 
 	//White Pieces
 	board white_pawns;
@@ -53,9 +59,12 @@ private:
 
 	//Other Boards
 	board all_pieces;
+	board all_pawns;
 	board white_pieces;
 	board black_pieces;
 
+	//engine color
+	bool isWhite;
 };
 
 
