@@ -42,7 +42,7 @@ int main()
 			Board.ExecuteMove(moveW);
 			Board.PrintBoard(boardOutput);
 		}
-		else if (Line == "startpos") {
+		else if (Line == "startpos" || Line == "position startpos") {
 			Board.setColor(true);
 		}
 		else if (Line == "stop") {

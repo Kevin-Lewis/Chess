@@ -217,11 +217,13 @@ void BitBoard::UpdateBoardSets() {
 	all_pawns = white_pawns | black_pawns;
 
 	all_pieces = white_pieces | black_pieces;
+
+	empty_board = ~all_pieces & all_pieces;
 }
 
 //Finds available moves for a given piece
 long long BitBoard::FindMoves(short piece) {
-	board movable_squares;
+	board movable_squares = empty_board;
 	board opposite_color;
 	int colMod;
 
@@ -236,40 +238,39 @@ long long BitBoard::FindMoves(short piece) {
 	
 	//pawns
 	if (all_pawns & 1LL << piece) {
-		movable_squares = (1LL << (piece + 8 * colMod))
-						| (opposite_color & 1LL << (piece + 7 * colMod))
-						| (opposite_color & 1LL << (piece + 9 * colMod));
+		movable_squares = (1LL << (piece + (8 * colMod)) & ~(opposite_color))
+						| (opposite_color & 1LL << (piece + (7 * colMod)))
+						| (opposite_color & 1LL << (piece + (9 * colMod)));
 	}
-
 	return movable_squares;
 }
 
 //Searches for the highest value possible move
 std::string BitBoard::SelectMove() {
-	long long piece = 0, found = 0, bestMove;
+	long long piece = -1, found = 0, startPos, bestMove;
 	board movePool;
 	board engineColor;
 
 	//check engine color
 	isWhite ? engineColor = white_pieces : engineColor = black_pieces;
 
-	while(piece < 64 && found == 0){
+	while(piece < 63 && found == 0){
 		++piece;
 		if (engineColor & (1LL << piece)){
 			movePool = FindMoves(piece);
-			for (int i = 1; i < 64; i++) {
+			for (int i = 0; i < 64; i++) {
 				if (movePool & (1LL << i)) {
 					bestMove = i;
-					found = 1;
-					break;
+					startPos = piece;
+					found == 1;
 				}
 			}
 		}
 	}
-	//Converts integer values to ascii values
-	int col1 = ((piece+8) % 8) + 1;
-	int row1 = (piece / 8) + 1;
-	int col2 = ((bestMove+8) % 8) + 1;
+	//Converts integer values to ascii values (FORMULAS NEED RE-EVALUATED)
+	int col1 = ((startPos + 8) % 8) + 1;
+	int row1 = (startPos / 8) + 1;
+	int col2 = ((bestMove + 8) % 8) + 1;
 	int row2 = (bestMove / 8) + 1;
 
 	char col = col1 + 96;
