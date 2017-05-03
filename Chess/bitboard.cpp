@@ -243,25 +243,26 @@ long long BitBoard::FindMoves(short piece) {
 	}
 	else {
 		engine_color = black_pieces;
-		opposite_color = white_pieces;
+		opposite_color = white_pieces; 
 	}
 	//pawns
 	if (all_pawns & 1LL << piece) {
-		movable_squares = (1LL << (piece + (8 * colMod)) & ~(all_pieces))
-			| (opposite_color & 1LL << (piece + (7 * colMod)) & ~(((1LL >> piece) & COL_A) & (1LL >> piece & white_pieces)) & ~(((1LL >> piece) & COL_H) & (1LL >> piece & black_pieces)))
-			| (opposite_color & 1LL << (piece + (9 * colMod)) & ~(((1LL >> piece) & COL_H) & (1LL >> piece & white_pieces)) & ~(((1LL >> piece) & COL_A) & (1LL >> piece & black_pieces)));
+		movable_squares |= (1LL << (piece + (8 * colMod)) & ~(all_pieces));
+		if ((1LL << (piece + 7 * colMod) & opposite_color) && !(isWhite && (1LL << piece & COL_A)) && !(!isWhite && (1LL << piece & COL_H))) {movable_squares |= 1LL << (piece + (7 * colMod));}
+		if ((1LL << (piece + 9 * colMod) & opposite_color) && !(isWhite && (1LL << piece & COL_H)) && !(!isWhite && (1LL << piece & COL_A))) {movable_squares |= 1LL << (piece + (9 * colMod));}
 	}
 
 	//knights
 	else if (all_knights & 1LL << piece) {
-		movable_squares = ((1LL << (piece - 6) & ~(engine_color)) & ~((1LL << piece & COL_G | 1LL << piece & COL_H | 1LL << piece & ROW_1))) 
-			| ((1LL << (piece + 6) & ~(engine_color)) & ~((1LL << piece & COL_A | 1LL << piece & COL_B | 1LL << piece & ROW_8)))
-			| ((1LL << (piece - 10) & ~(engine_color)) & ~((1LL << piece & COL_A | 1LL << piece & COL_B | 1LL << piece & ROW_1))) 
-			| ((1LL << (piece + 10) & ~(engine_color)) & ~((1LL << piece & COL_G | 1LL << piece & COL_H | 1LL << piece & ROW_8)))
-			| ((1LL << (piece - 15) & ~(engine_color)) & ~((1LL << piece & ROW_1 | 1LL << piece & ROW_2 | 1LL << piece & COL_H))) 
-			| ((1LL << (piece + 15) & ~(engine_color)) & ~((1LL << piece & ROW_7 | 1LL << piece & ROW_8 | 1LL << piece & COL_A)))
-			| ((1LL << (piece - 17) & ~(engine_color)) & ~((1LL << piece & ROW_1 | 1LL << piece & ROW_2 | 1LL << piece & COL_A))) 
-			| ((1LL << (piece + 17) & ~(engine_color)) & ~((1LL << piece & ROW_7 | 1LL << piece & ROW_8 | 1LL << piece & COL_H)));
+		if ((1LL << piece & ~COL_G) & (1LL << piece & ~COL_H) & (1LL << piece & ~ROW_1)) { movable_squares |= 1LL << (piece - 6);}
+		if ((1LL << piece & ~COL_A) & (1LL << piece & ~COL_B) & (1LL << piece & ~ROW_8)) { movable_squares |= 1LL << (piece + 6); }
+		if ((1LL << piece & ~COL_A) & (1LL << piece & ~COL_B) & (1LL << piece & ~ROW_1)) { movable_squares |= 1LL << (piece - 10); }
+		if ((1LL << piece & ~COL_G) & (1LL << piece & ~COL_H) & (1LL << piece & ~ROW_8)) { movable_squares |= 1LL << (piece + 10); }
+		if ((1LL << piece & ~COL_H) & (1LL << piece & ~ROW_1) & (1LL << piece & ~ROW_2)) { movable_squares |= 1LL << (piece - 15); }
+		if ((1LL << piece & ~COL_A) & (1LL << piece & ~ROW_7) & (1LL << piece & ~ROW_8)) { movable_squares |= 1LL << (piece + 15); }
+		if ((1LL << piece & ~COL_A) & (1LL << piece & ~ROW_1) & (1LL << piece & ~ROW_2)) { movable_squares |= 1LL << (piece - 17); }
+		if ((1LL << piece & ~COL_H) & (1LL << piece & ~ROW_7) & (1LL << piece & ~ROW_8)) { movable_squares |= 1LL << (piece + 17); }
+		movable_squares &= ~engine_color;
 	}
 
 	//rooks
