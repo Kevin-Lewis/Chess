@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "bitboard.h"
+#include <bitset>
 #include "position_constants.h"
 
 //Creates empty board
@@ -86,16 +87,14 @@ void BitBoard::PrintBoard(std::ofstream& file) {
 	file << "_____________________________________" << std::endl;
 }
 
-
 //Executes move from 4 char string
-void BitBoard::ExecuteMove(std::string move) {
+void BitBoard::ExecuteMove(std::string move){
 
 	//If there is only one move to process, return and continue (First turn as black)
 	if (move.find("oves") != std::string::npos)
 		return;
 
-	//
-
+	//splits string move into single location parts
 	std::string pos = move.substr(0, 2);
 	std::string newpos = move.substr(2, 2);
 
@@ -216,6 +215,7 @@ void BitBoard::UpdateBoardSets() {
 
 	all_pawns = white_pawns | black_pawns;
 	all_knights = white_knights | black_knights;
+	all_rooks = white_rooks | black_rooks;
 
 	all_pieces = white_pieces | black_pieces;
 
@@ -228,6 +228,10 @@ long long BitBoard::FindMoves(short piece) {
 	board opposite_color;
 	board engine_color;
 	int colMod;
+
+	//Find column and row
+	int column = ((piece + 8) % 8);
+	int row = (piece / 8);
 
 	//check engine color
 	isWhite ? colMod = 1 : colMod = -1;
@@ -244,17 +248,39 @@ long long BitBoard::FindMoves(short piece) {
 	//pawns
 	if (all_pawns & 1LL << piece) {
 		movable_squares = (1LL << (piece + (8 * colMod)) & ~(all_pieces))
-						| (opposite_color & 1LL << (piece + (7 * colMod)))
-						| (opposite_color & 1LL << (piece + (9 * colMod)));
+			| (opposite_color & 1LL << (piece + (7 * colMod)) & ~(((1LL >> piece) & COL_A) & (1LL >> piece & white_pieces)) & ~(((1LL >> piece) & COL_H) & (1LL >> piece & black_pieces)))
+			| (opposite_color & 1LL << (piece + (9 * colMod)) & ~(((1LL >> piece) & COL_H) & (1LL >> piece & white_pieces)) & ~(((1LL >> piece) & COL_A) & (1LL >> piece & black_pieces)));
 	}
 
 	//knights
-	if (all_knights & 1LL << piece) {
-		movable_squares = ((1LL << (piece - 6) & ~(engine_color)) & ~((1LL << piece & COL_G | 1LL << piece & COL_H | 1LL << piece & ROW_1))) | ((1LL << (piece + 6) & ~(engine_color)) & ~((1LL << piece & COL_A | 1LL << piece & COL_B | 1LL << piece & ROW_8)))
-			| ((1LL << (piece - 10) & ~(engine_color)) & ~((1LL << piece & COL_A | 1LL << piece & COL_B | 1LL << piece & ROW_1))) | ((1LL << (piece + 10) & ~(engine_color)) & ~((1LL << piece & COL_G | 1LL << piece & COL_H | 1LL << piece & ROW_8)))
-			| ((1LL << (piece - 15) & ~(engine_color)) & ~((1LL << piece & ROW_1 | 1LL << piece & ROW_2 | 1LL << piece & COL_H))) | ((1LL << (piece + 15) & ~(engine_color)) & ~((1LL << piece & ROW_7 | 1LL << piece & ROW_8 | 1LL << piece & COL_A)))
-			| ((1LL << (piece - 17) & ~(engine_color)) & ~((1LL << piece & ROW_1 | 1LL << piece & ROW_2 | 1LL << piece & COL_A))) | ((1LL << (piece + 17) & ~(engine_color)) & ~((1LL << piece & ROW_7 | 1LL << piece & ROW_8 | 1LL << piece & COL_H)));
+	else if (all_knights & 1LL << piece) {
+		movable_squares = ((1LL << (piece - 6) & ~(engine_color)) & ~((1LL << piece & COL_G | 1LL << piece & COL_H | 1LL << piece & ROW_1))) 
+			| ((1LL << (piece + 6) & ~(engine_color)) & ~((1LL << piece & COL_A | 1LL << piece & COL_B | 1LL << piece & ROW_8)))
+			| ((1LL << (piece - 10) & ~(engine_color)) & ~((1LL << piece & COL_A | 1LL << piece & COL_B | 1LL << piece & ROW_1))) 
+			| ((1LL << (piece + 10) & ~(engine_color)) & ~((1LL << piece & COL_G | 1LL << piece & COL_H | 1LL << piece & ROW_8)))
+			| ((1LL << (piece - 15) & ~(engine_color)) & ~((1LL << piece & ROW_1 | 1LL << piece & ROW_2 | 1LL << piece & COL_H))) 
+			| ((1LL << (piece + 15) & ~(engine_color)) & ~((1LL << piece & ROW_7 | 1LL << piece & ROW_8 | 1LL << piece & COL_A)))
+			| ((1LL << (piece - 17) & ~(engine_color)) & ~((1LL << piece & ROW_1 | 1LL << piece & ROW_2 | 1LL << piece & COL_A))) 
+			| ((1LL << (piece + 17) & ~(engine_color)) & ~((1LL << piece & ROW_7 | 1LL << piece & ROW_8 | 1LL << piece & COL_H)));
 	}
+
+	//rooks
+	else if (all_rooks & 1LL << piece) {
+		int Rcollision = 0, Lcollision = 0, Acollision = 0, Bcollision = 0;
+		//pieces to the right
+		for (int i = 1; (Rcollision == 0 && (i + column) < 8); i++) {(1LL << (piece + i) & ~all_pieces) ? movable_squares |= (1LL << (piece + i)) : (Rcollision = 1) && (movable_squares |= (1LL << (piece + i))); }
+		//pieces to the left
+		for (int i = -1; Lcollision == 0 && ((i + column) > -1); i--) { (1LL << (piece + i) & ~all_pieces) ? movable_squares |= 1LL << (piece + i) : (Lcollision = 1) && (movable_squares |= 1LL << (piece + i)); }
+		//pieces above
+		for (int i = 1; Acollision == 0 && ((i + row) < 8); i++) { (1LL << (piece + (8 * i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (8 * i)) : (Acollision = 1) && (movable_squares |= 1LL << (piece + (8 * i))); }
+		//pieces below
+		for (int i = -1; Bcollision == 0 && ((i + row) > -1); i--) { (1LL << (piece + (8 * i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (8 * i)) : (Bcollision = 1) && (movable_squares |= 1LL << (piece + (8 * i))); }
+	
+		movable_squares &= ~engine_color;
+	}
+
+	std::bitset<64> x(movable_squares);
+	std::cout << x << std::endl;
 
 	return movable_squares;
 }

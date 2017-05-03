@@ -13,25 +13,6 @@ public:
 
 	void ExecuteMove(std::string move);
 
-	//BitBoard Getters
-	long long GetAllPieces() const { return all_pieces; }
-	long long GetWhitePieces() const { return white_pieces; }
-	long long GetBlackPieces() const { return black_pieces; }
-
-	long long GetWhitePawns() const { return white_pawns; }
-	long long GetWhiteKnights() const { return white_knights; }
-	long long GetWhiteBishops() const { return white_bishops; }
-	long long GetWhiteRooks() const { return white_rooks; }
-	long long GetWhiteQueen() const { return white_queen; }
-	long long GetWhiteKing() const { return white_king; }
-
-	long long GetBlackPawns() const { return black_pawns; }
-	long long GetBlackKnights() const { return black_knights; }
-	long long GetBlackBishops() const { return black_bishops; }
-	long long GetBlackRooks() const { return black_rooks; }
-	long long GetBlackQueen() const { return black_queen; }
-	long long GetBlackKing() const { return black_king; }
-
 	void setColor(bool White) { isWhite = White; }
 
 private:
@@ -61,6 +42,7 @@ private:
 	board all_pieces;
 	board all_pawns;
 	board all_knights;
+	board all_rooks;
 	board empty_board;
 	board white_pieces;
 	board black_pieces;
