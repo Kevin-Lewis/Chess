@@ -38,7 +38,7 @@ void BitBoard::NewBoard() {
 	//Place the black pieces.
 	black_pawns = ROW_7;
 	black_knights = POS_B8 | POS_G8;
-	black_bishops = POS_C8 | POS_F8;
+	black_bishops =  POS_C8 | POS_F8;
 	black_rooks = POS_A8 | POS_H8;
 	black_queen = POS_D8;
 	black_king = POS_E8;
@@ -217,6 +217,7 @@ void BitBoard::UpdateBoardSets() {
 	all_knights = white_knights | black_knights;
 	all_rooks = white_rooks | black_rooks;
 	all_bishops = white_bishops | black_bishops;
+	all_queens = white_queen | black_queen;
 
 	all_pieces = white_pieces | black_pieces;
 
@@ -267,7 +268,7 @@ long long BitBoard::FindMoves(short piece) {
 	}
 
 	//rooks
-	else if (all_rooks & 1LL << piece) {
+	if ((all_rooks & 1LL << piece) || (all_queens & 1LL << piece)) {
 		int Rcollision = 0, Lcollision = 0, Acollision = 0, Bcollision = 0;
 		//pieces to the right
 		for (int i = 1; (Rcollision == 0 && (i + column) < 8); i++) {(1LL << (piece + i) & ~all_pieces) ? movable_squares |= (1LL << (piece + i)) : (Rcollision = 1) && (movable_squares |= (1LL << (piece + i))); }
@@ -282,12 +283,12 @@ long long BitBoard::FindMoves(short piece) {
 	}
 
 	//bishops
-	else if (all_bishops & 1LL << piece) {
+	if ((all_bishops & 1LL << piece) || (all_queens & 1LL << piece)) {
 		int NEcollision = 0, NWcollision = 0, SEcollision = 0, SWcollision = 0;
 		//pieces NE
 		for (int i=1; NEcollision == 0 && ((i+row) < 8) && ((i+column) < 8) ; i++) { (1LL << (piece + (9*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (9*i)) : (NEcollision = 1) && (movable_squares |= 1LL << (piece+(9 * i))); }
 		//pieces NW
-		for (int i=1; NWcollision == 0 && ((i+row) < 8) && ((i+column) > -1); i++) { (1LL << (piece + (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (7*i)) : (NWcollision = 1) && (movable_squares |= 1LL << (piece+(7 * i))); }
+		for (int i=1; NWcollision == 0 && ((i+row) < 8) && (((-1*i)+column) > -1); i++) { (1LL << (piece + (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (7*i)) : (NWcollision = 1) && (movable_squares |= 1LL << (piece+(7 * i))); }
 		//pieces SE
 		for (int i=-1; SEcollision == 0 && ((abs(i)+row) > -1) && ((abs(i)+column) < 8); i--) { (1LL << (piece + (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (7*i)) : (SEcollision = 1) && (movable_squares |= 1LL << (piece+(7 * i))); }
 		//pieces SW
