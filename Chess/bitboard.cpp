@@ -216,6 +216,7 @@ void BitBoard::UpdateBoardSets() {
 	all_pawns = white_pawns | black_pawns;
 	all_knights = white_knights | black_knights;
 	all_rooks = white_rooks | black_rooks;
+	all_bishops = white_bishops | black_bishops;
 
 	all_pieces = white_pieces | black_pieces;
 
@@ -280,8 +281,23 @@ long long BitBoard::FindMoves(short piece) {
 		movable_squares &= ~engine_color;
 	}
 
-	std::bitset<64> x(movable_squares);
-	std::cout << x << std::endl;
+	//bishops
+	else if (all_bishops & 1LL << piece) {
+		int NEcollision = 0, NWcollision = 0, SEcollision = 0, SWcollision = 0;
+		//pieces NE
+		for (int i=1; NEcollision == 0 && ((i+row) < 8) && ((i+column) < 8) ; i++) { (1LL << (piece + (9*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (9*i)) : (NEcollision = 1) && (movable_squares |= 1LL << (piece+(9 * i))); }
+		//pieces NW
+		for (int i=1; NWcollision == 0 && ((i+row) < 8) && ((i+column) > -1); i++) { (1LL << (piece + (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (7*i)) : (NWcollision = 1) && (movable_squares |= 1LL << (piece+(7 * i))); }
+		//pieces SE
+		for (int i=-1; SEcollision == 0 && ((abs(i)+row) > -1) && ((abs(i)+column) < 8); i--) { (1LL << (piece + (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (7*i)) : (SEcollision = 1) && (movable_squares |= 1LL << (piece+(7 * i))); }
+		//pieces SW
+		for (int i=-1; SWcollision == 0 && ((i+row) > -1) && ((i+column) > -1); i--) { (1LL << (piece + (9*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (9*i)) : (SWcollision = 1) && (movable_squares |= 1LL << (piece+(9 * i))); }
+
+		movable_squares &= ~engine_color;
+	}
+
+	//std::bitset<64> x(movable_squares);
+	//std::cout << x << std::endl;
 
 	return movable_squares;
 }

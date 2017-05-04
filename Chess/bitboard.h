@@ -43,6 +43,7 @@ private:
 	board all_pawns;
 	board all_knights;
 	board all_rooks;
+	board all_bishops;
 	board empty_board;
 	board white_pieces;
 	board black_pieces;
