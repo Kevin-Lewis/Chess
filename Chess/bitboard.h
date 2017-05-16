@@ -45,6 +45,7 @@ private:
 	board all_rooks;
 	board all_bishops;
 	board all_queens;
+	board all_kings;
 	board empty_board;
 	board white_pieces;
 	board black_pieces;

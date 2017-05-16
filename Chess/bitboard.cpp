@@ -218,6 +218,7 @@ void BitBoard::UpdateBoardSets() {
 	all_rooks = white_rooks | black_rooks;
 	all_bishops = white_bishops | black_bishops;
 	all_queens = white_queen | black_queen;
+	all_kings = white_king | black_king;
 
 	all_pieces = white_pieces | black_pieces;
 
@@ -297,8 +298,20 @@ long long BitBoard::FindMoves(short piece) {
 		movable_squares &= ~engine_color;
 	}
 
-	//std::bitset<64> x(movable_squares);
-	//std::cout << x << std::endl;
+	//King
+	if (all_kings & 1LL << piece) {
+		if (row != 7) { movable_squares |= ((1LL << (piece + 8)) & ~(engine_color));}
+		if (row != 7 && column != 0) { movable_squares |= ((1LL << (piece + 7)) & ~(engine_color)); }
+		if (row != 7 && column != 7) { movable_squares |= ((1LL << (piece + 9)) & ~(engine_color)); }
+		if (row != 0) { movable_squares |= ((1LL << (piece - 8)) & ~(engine_color)); }
+		if (row != 0 && column != 0) { movable_squares |= ((1LL << (piece - 7)) & ~(engine_color)); }
+		if (row != 0 && column != 7) { movable_squares |= ((1LL << (piece - 9)) & ~(engine_color)); }
+		if (column != 7) { movable_squares |= ((1LL << (piece + 1)) & ~(engine_color)); }
+		if (column != 0) { movable_squares |= ((1LL << (piece - 1)) & ~(engine_color)); }
+	}
+
+	std::bitset<64> x(movable_squares);
+	std::cout << x << std::endl;
 
 	return movable_squares;
 }
