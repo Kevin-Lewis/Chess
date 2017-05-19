@@ -108,6 +108,12 @@ void BitBoard::ExecuteMove(std::string move){
 	long long start = (((row1 - 1) * 8) + col1) - 1;
 	long long end = (((row2 - 1) * 8) + col2) - 1;
 
+	//updates board value array
+	std::cout << "Old Board Sum: " << boardSum() << " vs New Board Sum : ";
+	boardValue[end] = boardValue[start];
+	boardValue[start] = 0;
+	std::cout << boardSum() << std::endl;
+
 	//Destroys piece at current end location if any
 	if (white_pieces & 1LL << end) {
 		if (white_pawns & 1LL << end) {
@@ -310,20 +316,23 @@ long long BitBoard::FindMoves(short piece) {
 		if (column != 0) { movable_squares |= ((1LL << (piece - 1)) & ~(engine_color)); }
 	}
 
-	std::bitset<64> x(movable_squares);
-	std::cout << x << std::endl;
+	//std::bitset<64> x(movable_squares);
+	//std::cout << x << std::endl;
 
 	return movable_squares;
 }
 
 //Searches for the highest value possible move
 std::string BitBoard::SelectMove() {
-	long long piece = -1, found = 0, startPos, bestMove;
+	int piece = -1, found = 0, startPos, bestMove, advantage, new_advantage;
 	board movePool;
 	board engineColor;
 
 	//check engine color
 	isWhite ? engineColor = white_pieces : engineColor = black_pieces;
+
+	//handles current board advantage
+	advantage = boardSum();
 
 	while(piece < 63 && found == 0){
 		++piece;
@@ -331,9 +340,22 @@ std::string BitBoard::SelectMove() {
 			movePool = FindMoves(piece);
 			for (int i = 0; i < 64; i++) {
 				if (movePool & (1LL << i)) {
-					bestMove = i;
-					startPos = piece;
-					found = 1;
+					//Update Board Values
+					int temp = boardValue[piece];
+					int temp2 = boardValue[i];
+					boardValue[piece] = 0;
+					boardValue[i] = temp;
+					new_advantage = boardSum();
+					//Selects a new best move if it improves the engine's board position
+					if (((new_advantage >= advantage) && isWhite) || ((new_advantage <= advantage) && !isWhite)){
+						bestMove = i;
+						startPos = piece;
+						advantage = new_advantage;
+						//found = 1;
+					}
+				//Reset board values
+				boardValue[piece] = temp;
+				boardValue[i] = temp2;
 				}
 			}
 		}
@@ -357,4 +379,13 @@ std::string BitBoard::SelectMove() {
 	move += newrow;
 
 	return move;
+}
+
+int BitBoard::boardSum() {
+	int sum = 0;
+	for (int i = 0; i < 64; i++)
+	{
+		sum += boardValue[i];
+	}
+	return sum;
 }

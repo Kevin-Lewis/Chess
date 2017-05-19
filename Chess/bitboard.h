@@ -50,6 +50,18 @@ private:
 	board white_pieces;
 	board black_pieces;
 
+	//Board Value Array
+	int boardValue[64]{ 5,  3,  3,  9, 100, 3,  3,  5,
+						1,  1,  1,  1,  1,  1,  1,  1,
+						0,  0,  0,  0,  0,  0,  0,  0,
+						0,  0,  0,  0,  0,  0,  0,  0,
+						0,  0,  0,  0,  0,  0,  0,  0,
+						0,  0,  0,  0,  0,  0,  0,  0,
+					   -1, -1, -1, -1, -1, -1, -1, -1,
+					   -5, -3, -3, -9,-100,-3, -3, -5 };
+
+	int boardSum();
+
 	//engine color
 	bool isWhite;
 };
