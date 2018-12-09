@@ -45,6 +45,16 @@ void BitBoard::NewBoard() {
 
 	UpdateBoardSets();
 
+	int defaultValue[64]{ 5,  3,  3,  9, 100, 3,  3,  5,
+						1,  1,  1,  1,  1,  1,  1,  1,
+						0,  0,  0,  0,  0,  0,  0,  0,
+						0,  0,  0,  0,  0,  0,  0,  0,
+						0,  0,  0,  0,  0,  0,  0,  0,
+						0,  0,  0,  0,  0,  0,  0,  0,
+					   -1, -1, -1, -1, -1, -1, -1, -1,
+					   -5, -3, -3, -9,-100,-3, -3, -5 };
+	for(int i = 0; i < 64; i++){boardValue[i] = defaultValue[i];}
+
 	isWhite = false;
 }
 
