@@ -5,7 +5,7 @@
 #include "position_constants.h"
 
 //Creates empty board
-BitBoard::BitBoard(){
+BitboardController::BitboardController(){
 	white_pawns = 0LL;
 	white_knights = 0LL;
 	white_bishops = 0LL;
@@ -26,7 +26,7 @@ BitBoard::BitBoard(){
 }
 
 //Creates a board with all pieces in their starting positions
-void BitBoard::NewBoard() {
+void BitboardController::newBoard() {
 	//Place the white pieces.
 	white_pawns = ROW_2;
 	white_knights = POS_B1 | POS_G1;
@@ -43,7 +43,7 @@ void BitBoard::NewBoard() {
 	black_queen = POS_D8;
 	black_king = POS_E8;
 
-	UpdateBoardSets();
+	updateBoardSets();
 
 	int defaultValue[64]{ 5,  3,  3,  9, 100, 3,  3,  5,
 						1,  1,  1,  1,  1,  1,  1,  1,
@@ -58,7 +58,7 @@ void BitBoard::NewBoard() {
 	isWhite = false;
 }
 
-void BitBoard::PrintBoard(std::ofstream& file) {
+void BitboardController::printBoard(std::ofstream& file) {
 	int count = 0;
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
@@ -98,7 +98,7 @@ void BitBoard::PrintBoard(std::ofstream& file) {
 }
 
 //Executes move from 4 char string
-void BitBoard::ExecuteMove(std::string move){
+void BitboardController::executeMove(std::string move){
 
 	//If there is only one move to process, return and continue (First turn as black)
 	if (move.find("oves") != std::string::npos)
@@ -219,12 +219,12 @@ void BitBoard::ExecuteMove(std::string move){
 			black_king |= 1LL << end;
 		}
 	}
-	UpdateBoardSets();
+	updateBoardSets();
 }
 
 
 //Updates the the bitboards containing multiple pieces
-void BitBoard::UpdateBoardSets() {
+void BitboardController::updateBoardSets() {
 	white_pieces = white_pawns | white_knights | white_bishops | white_rooks | white_queen | white_king;
 	
 	black_pieces = black_pawns | black_knights | black_bishops | black_rooks | black_queen | black_king;
@@ -242,7 +242,7 @@ void BitBoard::UpdateBoardSets() {
 }
 
 //Finds available moves for a given piece
-long long BitBoard::FindMoves(short piece) {
+long long BitboardController::findMoves(short piece) {
 	board movable_squares = empty_board;
 	board opposite_color;
 	board engine_color;
@@ -333,7 +333,7 @@ long long BitBoard::FindMoves(short piece) {
 }
 
 //Searches for the highest value possible move
-std::string BitBoard::SelectMove() {
+std::string BitboardController::selectMove() {
 	int piece = -1, found = 0, startPos, bestMove, advantage, new_advantage;
 	board movePool;
 	board engineColor;
@@ -347,7 +347,7 @@ std::string BitBoard::SelectMove() {
 	while(piece < 63 && found == 0){
 		++piece;
 		if (engineColor & (1LL << piece)){
-			movePool = FindMoves(piece);
+			movePool = findMoves(piece);
 			for (int i = 0; i < 64; i++) {
 				if (movePool & (1LL << i)) {
 					//Update Board Values
@@ -391,7 +391,7 @@ std::string BitBoard::SelectMove() {
 	return move;
 }
 
-int BitBoard::boardSum() {
+int BitboardController::boardSum(){
 	int sum = 0;
 	for (int i = 0; i < 64; i++)
 	{

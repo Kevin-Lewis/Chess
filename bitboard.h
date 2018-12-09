@@ -1,26 +1,26 @@
 #ifndef BITBOARD_H
 #define BITBOARD_H
 #include <iostream>
-class BitBoard{
+class BitboardController{
 public:
-	BitBoard();
+	BitboardController();
 
-	void NewBoard();
+	void newBoard();
 
-	void PrintBoard(std::ofstream& file);
+	void printBoard(std::ofstream& file);
 
-	std::string SelectMove();
+	std::string selectMove();
 
-	void ExecuteMove(std::string move);
+	void executeMove(std::string move);
 
 	void setColor(bool White) { isWhite = White; }
 
 private:
 	typedef long long board;
 
-	void UpdateBoardSets();
+	void updateBoardSets();
 
-	long long FindMoves(short piece);
+	long long findMoves(short piece);
 
 	//White Pieces
 	board white_pawns;
@@ -59,6 +59,8 @@ private:
 						0,  0,  0,  0,  0,  0,  0,  0,
 					   -1, -1, -1, -1, -1, -1, -1, -1,
 					   -5, -3, -3, -9,-100,-3, -3, -5 };
+
+
 
 	int boardSum();
 

@@ -3,10 +3,10 @@
 #include <fstream>
 #include "bitboard.h"
 
-int main()
-{
-	BitBoard Board;
-	Board.NewBoard();
+int main(){
+
+	BitboardController Board;
+	Board.newBoard();
 	std::string line;
 	std::string path(getenv("HOME"));
 	std::string path2 = path;
@@ -35,16 +35,16 @@ int main()
 			std::cout << "readyok" << std::endl;
 		}
 		else if (line == "ucinewgame") {
-			Board.NewBoard();
+			Board.newBoard();
 		}
 
 		if (line.substr(0, 24) == "position startpos moves ") {
 			std::string moveW = line.substr(line.size() - 4);
 			std::string moveB = line.substr(line.size() - 9, 4);
-			Board.ExecuteMove(moveB);
-			Board.PrintBoard(boardOutput);
-			Board.ExecuteMove(moveW);
-			Board.PrintBoard(boardOutput);
+			Board.executeMove(moveB);
+			Board.printBoard(boardOutput);
+			Board.executeMove(moveW);
+			Board.printBoard(boardOutput);
 		}
 		else if (line == "startpos" || line == "position startpos") {
 			Board.setColor(true);
@@ -53,7 +53,7 @@ int main()
 			; // nothing
 		}
 		else if (line.substr(0, 3) == "go ") {
-			std::string move = Board.SelectMove();
+			std::string move = Board.selectMove();
 			cmdLog << "best move: " << move << std::endl;
 			std::cout << "bestmove " << move << std::endl;
 		}
