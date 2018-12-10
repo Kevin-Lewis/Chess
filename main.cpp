@@ -5,8 +5,8 @@
 
 int main(){
 
-	BitboardController Board;
-	Board.newBoard();
+	BitboardController controller;
+	controller.newBoard();
 	std::string line;
 	std::string path(getenv("HOME"));
 	std::string path2 = path;
@@ -35,25 +35,25 @@ int main(){
 			std::cout << "readyok" << std::endl;
 		}
 		else if (line == "ucinewgame") {
-			Board.newBoard();
+			controller.newBoard();
 		}
 
 		if (line.substr(0, 24) == "position startpos moves ") {
 			std::string moveW = line.substr(line.size() - 4);
 			std::string moveB = line.substr(line.size() - 9, 4);
-			Board.executeMove(moveB);
-			Board.printBoard(boardOutput);
-			Board.executeMove(moveW);
-			Board.printBoard(boardOutput);
+			controller.executeMove(moveB);
+			controller.printBoard(boardOutput);
+			controller.executeMove(moveW);
+			controller.printBoard(boardOutput);
 		}
 		else if (line == "startpos" || line == "position startpos") {
-			Board.setColor(true);
+			controller.setColor(true);
 		}
 		else if (line == "stop") {
 			; // nothing
 		}
 		else if (line.substr(0, 3) == "go ") {
-			std::string move = Board.selectMove();
+			std::string move = controller.selectMove();
 			cmdLog << "best move: " << move << std::endl;
 			std::cout << "bestmove " << move << std::endl;
 		}

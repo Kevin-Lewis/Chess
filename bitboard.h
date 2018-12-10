@@ -1,5 +1,3 @@
-#ifndef BITBOARD_H
-#define BITBOARD_H
 #include <iostream>
 class BitboardController{
 public:
@@ -67,6 +65,3 @@ private:
 	//engine color
 	bool isWhite;
 };
-
-
-#endif
