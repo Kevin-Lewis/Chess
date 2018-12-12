@@ -48,6 +48,11 @@ int main(){
 		}
 		else if (line == "startpos" || line == "position startpos") {
 			controller.setColor(true);
+			std::string move = controller.selectMove();
+			cmdLog << "best move: " << move << std::endl;
+			std::cout << "bestmove " << move << std::endl;
+			cmdLog.close();
+			boardOutput.close();
 		}
 		else if (line == "stop") {
 			; // nothing

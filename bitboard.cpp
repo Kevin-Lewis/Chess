@@ -245,7 +245,7 @@ void BitboardController::updateBoardSets() {
 long long BitboardController::findMoves(short piece) {
 	board movable_squares = empty_board;
 	board opposite_color;
-	board engine_color;
+	board active_color;
 	int colMod;
 
 	//Find column and row
@@ -257,11 +257,11 @@ long long BitboardController::findMoves(short piece) {
 
 	//Check which color piece is being searched
 	if (white_pieces & 1LL << piece) {
-		engine_color = white_pieces;
+		active_color = white_pieces;
 		opposite_color = black_pieces;
 	}
 	else {
-		engine_color = black_pieces;
+		active_color = black_pieces;
 		opposite_color = white_pieces; 
 	}
 	//pawns
@@ -281,7 +281,7 @@ long long BitboardController::findMoves(short piece) {
 		if ((1LL << piece & ~COL_A) & (1LL << piece & ~ROW_7) & (1LL << piece & ~ROW_8)) { movable_squares |= 1LL << (piece + 15); }
 		if ((1LL << piece & ~COL_A) & (1LL << piece & ~ROW_1) & (1LL << piece & ~ROW_2)) { movable_squares |= 1LL << (piece - 17); }
 		if ((1LL << piece & ~COL_H) & (1LL << piece & ~ROW_7) & (1LL << piece & ~ROW_8)) { movable_squares |= 1LL << (piece + 17); }
-		movable_squares &= ~engine_color;
+		movable_squares &= ~active_color;
 	}
 
 	//rooks
@@ -296,7 +296,7 @@ long long BitboardController::findMoves(short piece) {
 		//pieces below
 		for (int i = -1; Bcollision == 0 && ((i + row) > -1); i--) { (1LL << (piece + (8 * i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (8 * i)) : (Bcollision = 1) && (movable_squares |= 1LL << (piece + (8 * i))); }
 	
-		movable_squares &= ~engine_color;
+		movable_squares &= ~active_color;
 	}
 
 	//bishops
@@ -307,46 +307,42 @@ long long BitboardController::findMoves(short piece) {
 		//pieces NW
 		for (int i=1; NWcollision == 0 && ((i+row) < 8) && (((-1*i)+column) > -1); i++) { (1LL << (piece + (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (7*i)) : (NWcollision = 1) && (movable_squares |= 1LL << (piece+(7 * i))); }
 		//pieces SE
-		for (int i=-1; SEcollision == 0 && ((abs(i)+row) > -1) && ((abs(i)+column) < 8); i--) { (1LL << (piece + (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (7*i)) : (SEcollision = 1) && (movable_squares |= 1LL << (piece+(7 * i))); }
+		for (int i=-1; SEcollision == 0 && ((i+row) > -1) && ((i+column) < 8); i--) { (1LL << (piece + (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (7*i)) : (SEcollision = 1) && (movable_squares |= 1LL << (piece+(7 * i))); }
 		//pieces SW
 		for (int i=-1; SWcollision == 0 && ((i+row) > -1) && ((i+column) > -1); i--) { (1LL << (piece + (9*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (9*i)) : (SWcollision = 1) && (movable_squares |= 1LL << (piece+(9 * i))); }
-
-		movable_squares &= ~engine_color;
+		movable_squares &= ~active_color;
 	}
 
 	//King
 	if (all_kings & 1LL << piece) {
-		if (row != 7) { movable_squares |= ((1LL << (piece + 8)) & ~(engine_color));}
-		if (row != 7 && column != 0) { movable_squares |= ((1LL << (piece + 7)) & ~(engine_color)); }
-		if (row != 7 && column != 7) { movable_squares |= ((1LL << (piece + 9)) & ~(engine_color)); }
-		if (row != 0) { movable_squares |= ((1LL << (piece - 8)) & ~(engine_color)); }
-		if (row != 0 && column != 0) { movable_squares |= ((1LL << (piece - 7)) & ~(engine_color)); }
-		if (row != 0 && column != 7) { movable_squares |= ((1LL << (piece - 9)) & ~(engine_color)); }
-		if (column != 7) { movable_squares |= ((1LL << (piece + 1)) & ~(engine_color)); }
-		if (column != 0) { movable_squares |= ((1LL << (piece - 1)) & ~(engine_color)); }
+		if (row != 7) { movable_squares |= ((1LL << (piece + 8)) & ~(active_color));}
+		if (row != 7 && column != 0) { movable_squares |= ((1LL << (piece + 7)) & ~(active_color)); }
+		if (row != 7 && column != 7) { movable_squares |= ((1LL << (piece + 9)) & ~(active_color)); }
+		if (row != 0) { movable_squares |= ((1LL << (piece - 8)) & ~(active_color)); }
+		if (row != 0 && column != 0) { movable_squares |= ((1LL << (piece - 7)) & ~(active_color)); }
+		if (row != 0 && column != 7) { movable_squares |= ((1LL << (piece - 9)) & ~(active_color)); }
+		if (column != 7) { movable_squares |= ((1LL << (piece + 1)) & ~(active_color)); }
+		if (column != 0) { movable_squares |= ((1LL << (piece - 1)) & ~(active_color)); }
 	}
-
-	//std::bitset<64> x(movable_squares);
-	//std::cout << x << std::endl;
 
 	return movable_squares;
 }
 
 //Searches for the highest value possible move
 std::string BitboardController::selectMove() {
-	int piece = -1, found = 0, startPos, bestMove, advantage, new_advantage;
+	int piece = -1, found = 0, startPos, best_move, advantage, new_advantage;
 	board movePool;
-	board engineColor;
+	board activeColor;
 
 	//check engine color
-	isWhite ? engineColor = white_pieces : engineColor = black_pieces;
+	isWhite ? activeColor = white_pieces : activeColor = black_pieces;
 
 	//handles current board advantage
 	advantage = boardSum();
 
 	while(piece < 63 && found == 0){
 		++piece;
-		if (engineColor & (1LL << piece)){
+		if (activeColor & (1LL << piece)){
 			movePool = findMoves(piece);
 			for (int i = 0; i < 64; i++) {
 				if (movePool & (1LL << i)) {
@@ -358,7 +354,7 @@ std::string BitboardController::selectMove() {
 					new_advantage = boardSum();
 					//Selects a new best move if it improves the engine's board position
 					if (((new_advantage >= advantage) && isWhite) || ((new_advantage <= advantage) && !isWhite)){
-						bestMove = i;
+						best_move = i;
 						startPos = piece;
 						advantage = new_advantage;
 						//found = 1;
@@ -373,8 +369,8 @@ std::string BitboardController::selectMove() {
 	//Converts integer values to ascii values
 	int col1 = ((startPos + 8) % 8) + 1;
 	int row1 = (startPos / 8) + 1;
-	int col2 = ((bestMove + 8) % 8) + 1;
-	int row2 = (bestMove / 8) + 1;
+	int col2 = ((best_move + 8) % 8) + 1;
+	int row2 = (best_move / 8) + 1;
 
 	char col = col1 + 96;
 	char row = row1 + 48;
