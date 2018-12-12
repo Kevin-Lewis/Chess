@@ -18,7 +18,7 @@ private:
 
 	void updateBoardSets();
 
-	long long findMoves(short piece);
+	long long findMoves(short piece, bool white);
 
 	//White Pieces
 	board white_pawns;

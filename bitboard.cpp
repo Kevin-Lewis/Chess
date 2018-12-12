@@ -242,7 +242,7 @@ void BitboardController::updateBoardSets() {
 }
 
 //Finds available moves for a given piece
-long long BitboardController::findMoves(short piece) {
+long long BitboardController::findMoves(short piece, bool white) {
 	board movable_squares = empty_board;
 	board opposite_color;
 	board active_color;
@@ -253,7 +253,7 @@ long long BitboardController::findMoves(short piece) {
 	int row = (piece / 8);
 
 	//check engine color
-	isWhite ? colMod = 1 : colMod = -1;
+	white ? colMod = 1 : colMod = -1;
 
 	//Check which color piece is being searched
 	if (white_pieces & 1LL << piece) {
@@ -267,8 +267,8 @@ long long BitboardController::findMoves(short piece) {
 	//pawns
 	if (all_pawns & 1LL << piece) {
 		movable_squares |= (1LL << (piece + (8 * colMod)) & ~(all_pieces));
-		if ((1LL << (piece + 7 * colMod) & opposite_color) && !(isWhite && (1LL << piece & COL_A)) && !(!isWhite && (1LL << piece & COL_H))) {movable_squares |= 1LL << (piece + (7 * colMod));}
-		if ((1LL << (piece + 9 * colMod) & opposite_color) && !(isWhite && (1LL << piece & COL_H)) && !(!isWhite && (1LL << piece & COL_A))) {movable_squares |= 1LL << (piece + (9 * colMod));}
+		if ((1LL << (piece + 7 * colMod) & opposite_color) && !(white && (1LL << piece & COL_A)) && !(!white && (1LL << piece & COL_H))) {movable_squares |= 1LL << (piece + (7 * colMod));}
+		if ((1LL << (piece + 9 * colMod) & opposite_color) && !(white && (1LL << piece & COL_H)) && !(!white && (1LL << piece & COL_A))) {movable_squares |= 1LL << (piece + (9 * colMod));}
 	}
 
 	//knights
@@ -343,7 +343,7 @@ std::string BitboardController::selectMove() {
 	while(piece < 63 && found == 0){
 		++piece;
 		if (activeColor & (1LL << piece)){
-			movePool = findMoves(piece);
+			movePool = findMoves(piece, isWhite);
 			for (int i = 0; i < 64; i++) {
 				if (movePool & (1LL << i)) {
 					//Update Board Values
