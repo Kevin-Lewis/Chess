@@ -10,18 +10,10 @@ int main(){
 	BitboardController controller;
 	controller.newBoard();
 	std::string line;
-	std::string path(getenv("HOME"));
-	std::string path2 = path;
-	path += "/Desktop/log.txt";
-	path2 += "/Desktop/output.txt";
-	std::ofstream cmdLog;
-	cmdLog.open(path);
 
 	std::cout.setf(std::ios::unitbuf); //Makes sure that the outputs are sent immediately to the GUI
 	
 	while (std::getline(std::cin, line)) {
-		//Write to Files
-		cmdLog << line << std::endl;
 		if (line == "uci") {
 			std::cout << "Zip Engine" << std::endl; //Engine Name
 			std::cout << "Kevin Lewis" << std::endl; //Author Name
@@ -46,24 +38,15 @@ int main(){
 		}
 		else if (line == "startpos" || line == "position startpos") {
 			controller.setColor(true);
-			std::string move = controller.selectMove2();
-			cmdLog << "best move: " << move << std::endl;
-			std::cout << "bestmove " << move << std::endl;
-			cmdLog.close();
-			BitboardController b = controller.selectMove(controller.getColor(), 1, controller);
-			std::cout << "board sum :" << b.boardSum() << std::endl;
 		}
 		else if (line == "stop") {
 			; // nothing
 		}
 		else if (line.substr(0, 3) == "go ") {
-			std::string move = controller.selectMove2();
-			cmdLog << "best move: " << move << std::endl;
+			BitboardController b = controller.selectMove(controller.getColor(), 3, controller);
+			std::string move = b.getMove(3);
 			std::cout << "bestmove " << move << std::endl;
-			BitboardController b = controller.selectMove(controller.getColor(), 1, controller);
-			std::cout << "board sum :" << b.boardSum() << std::endl;
 		}
 	}
-	cmdLog.close();
 	return 0;
 }

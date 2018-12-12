@@ -73,6 +73,8 @@ void BitboardController::newBoard() {
 	for(int i = 0; i < 64; i++){boardValue[i] = defaultValue[i];}
 
 	isWhite = false;
+
+	moveHistory = "";
 }
 
 void BitboardController::printBoard() {
@@ -134,6 +136,12 @@ void BitboardController::executeMove(std::string move, int col1, int row1, int c
 		row2 = newpos[1] - 48;
 	}
 	
+	//update recent move
+	recentMove[0] = col1; recentMove[1] = row1;
+	recentMove[2] = col2; recentMove[3] = row2;
+
+	moveHistory += getRecentMove();
+
 	//starting location on bitboard and ending location
 	long long start = (((row1 - 1) * 8) + col1) - 1;
 	long long end = (((row2 - 1) * 8) + col2) - 1;
@@ -359,6 +367,8 @@ BitboardController BitboardController::selectMove(bool white, int depth, Bitboar
 		return bitboard;
 	}
 
+	std::cout << "Current depth: " << depth << std::endl;
+
 	//Generate a list of moves
 	std::vector<BitboardController> moveList;
 	for(int piece = 0; piece < 64; piece++){
@@ -395,63 +405,6 @@ BitboardController BitboardController::selectMove(bool white, int depth, Bitboar
 	}
 }
 
-std::string BitboardController::selectMove2() {
-	int piece = -1, startPos, best_move, advantage, new_advantage;
-	board movePool;
-	board activeColor;
-
-	//check engine color
-	isWhite ? activeColor = white_pieces : activeColor = black_pieces;
-
-	//handles current board advantage
-	advantage = boardSum();
-
-	while(piece < 63){
-		++piece;
-		if(activeColor & (1LL << piece)){
-			movePool = findMoves(piece, isWhite);
-			for (int i = 0; i < 64; i++) {
-				if (movePool & (1LL << i)) {
-					//Update Board Values
-					int temp = boardValue[piece];
-					int temp2 = boardValue[i];
-					boardValue[piece] = 0;
-					boardValue[i] = temp;
-					new_advantage = boardSum();
-					//Selects a new best move if it improves the engine's board position
-					if (((new_advantage >= advantage) && isWhite) || ((new_advantage <= advantage) && !isWhite)){
-						best_move = i;
-						startPos = piece;
-						advantage = new_advantage;
-					}
-				//Reset board values
-				boardValue[piece] = temp;
-				boardValue[i] = temp2;
-				}
-			}
-		}
-	}
-	//Converts integer values to ascii values
-	int col1 = ((startPos + 8) % 8) + 1;
-	int row1 = (startPos / 8) + 1;
-	int col2 = ((best_move + 8) % 8) + 1;
-	int row2 = (best_move / 8) + 1;
-
-	char col = col1 + 96;
-	char row = row1 + 48;
-	char newcol = col2 + 96;
-	char newrow = row2 + 48;
-
-	//convert to string value for GUI
-	std::string move;
-	move += col;
-	move += row;
-	move += newcol;
-	move += newrow;
-
-	return move;
-}
-
 int BitboardController::boardSum(){
 	int sum = 0;
 	for (int i = 0; i < 64; i++)
@@ -459,4 +412,18 @@ int BitboardController::boardSum(){
 		sum += boardValue[i];
 	}
 	return sum;
+}
+
+std::string BitboardController::getRecentMove(){
+	char letters[9] = {' ','a','b','c','d','e','f','g','h'};
+	std::string str = letters[recentMove[0]] + std::to_string(recentMove[1]) + letters[recentMove[2]] + std::to_string(recentMove[3]);
+	return str;
+}
+
+std::string BitboardController::getMove(int depth){
+	std::string str = "";
+	if(moveHistory.length() >= 4){
+		str = moveHistory.substr((moveHistory.length() - (4 * depth)), 4);
+	}
+	return str; 
 }

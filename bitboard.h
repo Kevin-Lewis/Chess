@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+
 class BitboardController{
 public:
 	BitboardController();
@@ -11,14 +13,16 @@ public:
 	long long findMoves(short piece, bool white);
 	BitboardController selectMove(bool white, int depth, BitboardController board);
 
-	std::string selectMove2();
-
 	void executeMove(std::string move, int col1 = 0, int row1 = 0, int col2 = 0, int row2 = 0);
 
 	void setColor(bool White) { isWhite = White; }
 	bool getColor(){return isWhite;}
 
 	int boardSum();
+
+	std::string getRecentMove();
+
+	std::string getMove(int depth);
 
 private:
 	typedef long long board;
@@ -66,4 +70,9 @@ private:
 
 	//engine color
 	bool isWhite;
+
+	//most recent move set (row col to row col)
+	int recentMove[4]{0,0,0,0};
+
+	std::string moveHistory = "";
 };
