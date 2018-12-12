@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <fstream>
 #include "bitboard.h"
+
 
 int main(){
 
@@ -48,19 +50,23 @@ int main(){
 		}
 		else if (line == "startpos" || line == "position startpos") {
 			controller.setColor(true);
-			std::string move = controller.selectMove();
+			std::string move = controller.selectMove2();
 			cmdLog << "best move: " << move << std::endl;
 			std::cout << "bestmove " << move << std::endl;
 			cmdLog.close();
 			boardOutput.close();
+			BitboardController b = controller.selectMove(controller.getColor(), 1, controller);
+			std::cout << "board sum :" << b.boardSum() << std::endl;
 		}
 		else if (line == "stop") {
 			; // nothing
 		}
 		else if (line.substr(0, 3) == "go ") {
-			std::string move = controller.selectMove();
+			std::string move = controller.selectMove2();
 			cmdLog << "best move: " << move << std::endl;
 			std::cout << "bestmove " << move << std::endl;
+			BitboardController b = controller.selectMove(controller.getColor(), 1, controller);
+			std::cout << "board sum :" << b.boardSum() << std::endl;
 		}
 	}
 	cmdLog.close();

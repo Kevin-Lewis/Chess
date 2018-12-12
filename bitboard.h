@@ -2,16 +2,22 @@
 class BitboardController{
 public:
 	BitboardController();
+	BitboardController(int value);
 
 	void newBoard();
 
 	void printBoard(std::ofstream& file);
 
-	std::string selectMove();
+	BitboardController selectMove(bool white, int depth, BitboardController board);
 
-	void executeMove(std::string move);
+	std::string selectMove2();
+
+	void executeMove(std::string move, int col1 = 0, int row1 = 0, int col2 = 0, int row2 = 0);
 
 	void setColor(bool White) { isWhite = White; }
+	bool getColor(){return isWhite;}
+
+	int boardSum();
 
 private:
 	typedef long long board;
@@ -58,9 +64,6 @@ private:
 					   -1, -1, -1, -1, -1, -1, -1, -1,
 					   -5, -3, -3, -9,-100,-3, -3, -5 };
 
-
-
-	int boardSum();
 
 	//engine color
 	bool isWhite;

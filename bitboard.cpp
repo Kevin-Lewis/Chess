@@ -1,8 +1,21 @@
 #include <iostream>
+#include <vector>
 #include <fstream>
 #include "bitboard.h"
 #include <bitset>
 #include "position_constants.h"
+
+//Bitboard Controller Helper Functions
+BitboardController minBoardValue(BitboardController b1, BitboardController b2){
+	BitboardController minBoard;
+	b1.boardSum() < b2.boardSum() ? minBoard = b1 : minBoard = b2;
+	return minBoard;
+}
+BitboardController maxBoardValue(BitboardController b1, BitboardController b2){
+	BitboardController maxBoard;
+	b1.boardSum() > b2.boardSum() ? maxBoard = b1 : maxBoard = b2;
+	return maxBoard;
+}
 
 //Creates empty board
 BitboardController::BitboardController(){
@@ -24,6 +37,10 @@ BitboardController::BitboardController(){
 	black_pieces = 0LL;
 	all_pieces = 0LL;
 }
+
+//Allows manipulation of board value
+BitboardController::BitboardController(int value){boardValue[0] = value;}
+
 
 //Creates a board with all pieces in their starting positions
 void BitboardController::newBoard() {
@@ -98,28 +115,30 @@ void BitboardController::printBoard(std::ofstream& file) {
 }
 
 //Executes move from 4 char string
-void BitboardController::executeMove(std::string move){
+void BitboardController::executeMove(std::string move, int col1, int row1, int col2, int row2){
 
-	//If there is only one move to process, return and continue (First turn as black)
-	if (move.find("oves") != std::string::npos)
-		return;
+	//parse string unless int values provided
+	if(col1 == 0 && col2 == 0 && row1 == 0 && row2 == 0){
+		//If there is only one move to process, return and continue (First turn as black)
+		if (move.find("oves") != std::string::npos)
+			return;
 
-	//splits string move into single location parts
-	std::string pos = move.substr(0, 2);
-	std::string newpos = move.substr(2, 2);
+		//splits string move into single location parts
+		std::string pos = move.substr(0, 2);
+		std::string newpos = move.substr(2, 2);
 
-	//Converts string move to integer values
-	int col1 = (pos[0] - 96);
-	int col2 = (newpos[0] - 96);
-	int row1 = pos[1] - 48;
-	int row2 = newpos[1] - 48;
-
+		//Converts string move to integer values
+		col1 = (pos[0] - 96);
+		col2 = (newpos[0] - 96);
+		row1 = pos[1] - 48;
+		row2 = newpos[1] - 48;
+	}
+	
 	//starting location on bitboard and ending location
 	long long start = (((row1 - 1) * 8) + col1) - 1;
 	long long end = (((row2 - 1) * 8) + col2) - 1;
 
 	//updates board value array
-	std::cout << "Old Board Sum: " << boardSum() << " vs New Board Sum : ";
 	boardValue[end] = boardValue[start];
 	boardValue[start] = 0;
 	std::cout << boardSum() << std::endl;
@@ -132,6 +151,7 @@ void BitboardController::executeMove(std::string move){
 		else if (white_knights & 1LL << end) {
 			white_knights ^= 1LL << end;
 		}
+	
 		else if (white_bishops & 1LL << end) {
 			white_bishops ^= 1LL << end;
 		}
@@ -329,8 +349,56 @@ long long BitboardController::findMoves(short piece, bool white) {
 }
 
 //Searches for the highest value possible move
-std::string BitboardController::selectMove() {
-	int piece = -1, found = 0, startPos, best_move, advantage, new_advantage;
+
+BitboardController BitboardController::selectMove(bool white, int depth, BitboardController bitboard){
+	board activeColor;
+	board movePool;
+	white ? activeColor = white_pieces : activeColor = black_pieces;
+	BitboardController bestBoard;
+
+	//base case
+	if(depth == 0){
+		return bitboard;
+	}
+
+	//Generate a list of moves
+	std::vector<BitboardController> moveList;
+	for(int piece = 0; piece < 64; piece++){
+		if(activeColor & (1LL << piece)){
+			movePool = bitboard.findMoves(piece, white);
+			for(int move = 0; move < 64; move++){
+				if (movePool & (1LL << move)){
+					BitboardController newBoard = bitboard;
+					//calculate column and row
+					int col1 = ((piece + 8) % 8);
+					int row1 = (piece / 8);
+					int col2 = ((move + 8) % 8);
+					int row2 = (move / 8);
+					newBoard.executeMove("", col1, row1, col2, row2);
+					moveList.push_back(newBoard);
+				}
+			}
+		}
+	}
+	if(white){
+		bestBoard = BitboardController(-9999); //sets low boardValue
+		for(int i = 0; i < moveList.size(); i++){
+			bestBoard = maxBoardValue(bestBoard, bitboard.selectMove(false, depth - 1, moveList[i]));
+		}
+		return bestBoard;
+	}
+	else{
+		bestBoard = BitboardController(9999); //sets low boardValue
+		for(int i = 0; i < moveList.size(); i++){
+			bestBoard = minBoardValue(bestBoard, bitboard.selectMove(true, depth - 1, moveList[i]));
+		}
+		return bestBoard;
+	}
+
+}
+
+std::string BitboardController::selectMove2() {
+	int piece = -1, startPos, best_move, advantage, new_advantage;
 	board movePool;
 	board activeColor;
 
@@ -340,9 +408,9 @@ std::string BitboardController::selectMove() {
 	//handles current board advantage
 	advantage = boardSum();
 
-	while(piece < 63 && found == 0){
+	while(piece < 63){
 		++piece;
-		if (activeColor & (1LL << piece)){
+		if(activeColor & (1LL << piece)){
 			movePool = findMoves(piece, isWhite);
 			for (int i = 0; i < 64; i++) {
 				if (movePool & (1LL << i)) {
@@ -357,7 +425,6 @@ std::string BitboardController::selectMove() {
 						best_move = i;
 						startPos = piece;
 						advantage = new_advantage;
-						//found = 1;
 					}
 				//Reset board values
 				boardValue[piece] = temp;
