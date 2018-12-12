@@ -1,2 +1,2 @@
 all:
-	g++ -std=c++11 -o run main.cpp bitboard.cpp
+	g++ -std=c++11 -o akron_chess main.cpp bitboard.cpp

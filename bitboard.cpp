@@ -277,7 +277,7 @@ long long BitboardController::findMoves(short piece, bool white) {
 
 	//Find column and row
 	int column = ((piece + 8) % 8);
-	int row = (piece / 8);
+	int row = ((piece) / 8);
 
 	//check engine color
 	white ? colMod = 1 : colMod = -1;
@@ -330,17 +330,21 @@ long long BitboardController::findMoves(short piece, bool white) {
 	if ((all_bishops & 1LL << piece) || (all_queens & 1LL << piece)) {
 		int NEcollision = 0, NWcollision = 0, SEcollision = 0, SWcollision = 0;
 		//pieces NE
-		for (int i=1; NEcollision == 0 && ((i+row) < 8) && ((i+column) < 8) ; i++) { (1LL << (piece + (9*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (9*i)) : (NEcollision = 1) && (movable_squares |= 1LL << (piece+(9 * i))); }
+		for (int i=1; NEcollision == 0 && ((i+row) < 8) && ((i+column) < 8) ; i++) 
+		{ (1LL << (piece + (9*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (9*i)) : (NEcollision = 1) && (movable_squares |= 1LL << (piece+(9 * i))); }
 		//pieces NW
-		for (int i=1; NWcollision == 0 && ((i+row) < 8) && (((-1*i)+column) > -1); i++) { (1LL << (piece + (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (7*i)) : (NWcollision = 1) && (movable_squares |= 1LL << (piece+(7 * i))); }
+		for (int i=1; NWcollision == 0 && ((i+row) < 8) && (((-1*i)+column) > -1); i++)
+		{ (1LL << (piece + (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (7*i)) : (NWcollision = 1) && (movable_squares |= 1LL << (piece+(7 * i))); }
 		//pieces SE
-		for (int i=-1; SEcollision == 0 && ((i+row) > -1) && ((i+column) < 8); i--) { (1LL << (piece + (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (7*i)) : (SEcollision = 1) && (movable_squares |= 1LL << (piece+(7 * i))); }
+		for (int i=1; SEcollision == 0 && ((row-i) > -1) && ((i+column) < 8); i++)
+		{ (1LL << (piece - (7*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece - (7*i)) : (SEcollision = 1) && (movable_squares |= 1LL << (piece-(7 * i))); }
 		//pieces SW
-		for (int i=-1; SWcollision == 0 && ((i+row) > -1) && ((i+column) > -1); i--) { (1LL << (piece + (9*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece + (9*i)) : (SWcollision = 1) && (movable_squares |= 1LL << (piece+(9 * i))); }
+		for (int i=1; SWcollision == 0 && ((row-i) > -1) && ((column-i) > -1); i++)
+		{ (1LL << (piece - (9*i)) & ~all_pieces) ? movable_squares |= 1LL << (piece - (9*i)) : (SWcollision = 1) && (movable_squares |= 1LL << (piece-(9 * i))); }
 		movable_squares &= ~active_color;
 	}
 
-	//King
+	//kings
 	if (all_kings & 1LL << piece) {
 		if (row != 7) { movable_squares |= ((1LL << (piece + 8)) & ~(active_color));}
 		if (row != 7 && column != 0) { movable_squares |= ((1LL << (piece + 7)) & ~(active_color)); }
@@ -366,8 +370,6 @@ BitboardController BitboardController::selectMove(bool white, int depth, Bitboar
 	if(depth == 0){
 		return bitboard;
 	}
-
-	std::cout << "Current depth: " << depth << std::endl;
 
 	//Generate a list of moves
 	std::vector<BitboardController> moveList;

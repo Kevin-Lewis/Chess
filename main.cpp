@@ -10,6 +10,8 @@ int main(){
 	BitboardController controller;
 	controller.newBoard();
 	std::string line;
+	int depth = 3;
+	int turn = 0;
 
 	std::cout.setf(std::ios::unitbuf); //Makes sure that the outputs are sent immediately to the GUI
 	
@@ -35,6 +37,7 @@ int main(){
 			std::string moveB = line.substr(line.size() - 9, 4);
 			controller.executeMove(moveB);
 			controller.executeMove(moveW);
+			turn++;
 		}
 		else if (line == "startpos" || line == "position startpos") {
 			controller.setColor(true);
@@ -43,8 +46,8 @@ int main(){
 			; // nothing
 		}
 		else if (line.substr(0, 3) == "go ") {
-			BitboardController b = controller.selectMove(controller.getColor(), 3, controller);
-			std::string move = b.getMove(3);
+			BitboardController b = controller.selectMove(controller.getColor(), depth, controller);
+			std::string move = b.getMove(depth);
 			std::cout << "bestmove " << move << std::endl;
 		}
 	}
