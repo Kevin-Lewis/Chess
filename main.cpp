@@ -15,10 +15,8 @@ int main(){
 	path += "/Desktop/log.txt";
 	path2 += "/Desktop/output.txt";
 	std::ofstream cmdLog;
-	std::ofstream boardOutput;
 	cmdLog.open(path);
-	boardOutput.open(path2);
-	
+
 	std::cout.setf(std::ios::unitbuf); //Makes sure that the outputs are sent immediately to the GUI
 	
 	while (std::getline(std::cin, line)) {
@@ -44,9 +42,7 @@ int main(){
 			std::string moveW = line.substr(line.size() - 4);
 			std::string moveB = line.substr(line.size() - 9, 4);
 			controller.executeMove(moveB);
-			controller.printBoard(boardOutput);
 			controller.executeMove(moveW);
-			controller.printBoard(boardOutput);
 		}
 		else if (line == "startpos" || line == "position startpos") {
 			controller.setColor(true);
@@ -54,7 +50,6 @@ int main(){
 			cmdLog << "best move: " << move << std::endl;
 			std::cout << "bestmove " << move << std::endl;
 			cmdLog.close();
-			boardOutput.close();
 			BitboardController b = controller.selectMove(controller.getColor(), 1, controller);
 			std::cout << "board sum :" << b.boardSum() << std::endl;
 		}
@@ -70,6 +65,5 @@ int main(){
 		}
 	}
 	cmdLog.close();
-	boardOutput.close();
 	return 0;
 }

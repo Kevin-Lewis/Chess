@@ -75,43 +75,43 @@ void BitboardController::newBoard() {
 	isWhite = false;
 }
 
-void BitboardController::printBoard(std::ofstream& file) {
+void BitboardController::printBoard() {
 	int count = 0;
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (white_pawns & 1LL << count)
-				file << "P    ";
+				std::cout << "P    ";
 			else if (white_knights & 1LL << count)
-				file << "N    ";
+				std::cout << "N    ";
 			else if (white_bishops & 1LL << count)
-				file << "B    ";
+				std::cout << "B    ";
 			else if (white_rooks & 1LL << count)
-				file << "R    ";
+				std::cout << "R    ";
 			else if (white_queen & 1LL << count)
-				file << "Q    ";
+				std::cout << "Q    ";
 			else if (white_king & 1LL << count)
-				file << "K    ";
+				std::cout << "K    ";
 
 			else if (black_pawns & 1LL << count)
-				file << "p    ";
+				std::cout << "p    ";
 			else if (black_knights & 1LL << count)
-				file << "n    ";
+				std::cout << "n    ";
 			else if (black_bishops & 1LL << count)
-				file << "b    ";
+				std::cout << "b    ";
 			else if (black_rooks & 1LL << count)
-				file << "r    ";
+				std::cout << "r    ";
 			else if (black_queen & 1LL << count)
-				file << "q    ";
+				std::cout << "q    ";
 			else if (black_king & 1LL << count)
-				file << "k    ";
+				std::cout << "k    ";
 			
 			else
-				file << "-    ";
+				std::cout << "-    ";
 			++count;
 		}
-		file << std::endl << std::endl;
+		std::cout << std::endl << std::endl;
 	}
-	file << "_____________________________________" << std::endl;
+	std::cout << "_____________________________________" << std::endl;
 }
 
 //Executes move from 4 char string
@@ -141,7 +141,6 @@ void BitboardController::executeMove(std::string move, int col1, int row1, int c
 	//updates board value array
 	boardValue[end] = boardValue[start];
 	boardValue[start] = 0;
-	std::cout << boardSum() << std::endl;
 
 	//Destroys piece at current end location if any
 	if (white_pieces & 1LL << end) {
@@ -349,11 +348,10 @@ long long BitboardController::findMoves(short piece, bool white) {
 }
 
 //Searches for the highest value possible move
-
 BitboardController BitboardController::selectMove(bool white, int depth, BitboardController bitboard){
 	board activeColor;
 	board movePool;
-	white ? activeColor = white_pieces : activeColor = black_pieces;
+	white ? activeColor = bitboard.white_pieces : activeColor = bitboard.black_pieces;
 	BitboardController bestBoard;
 
 	//base case
@@ -368,12 +366,13 @@ BitboardController BitboardController::selectMove(bool white, int depth, Bitboar
 			movePool = bitboard.findMoves(piece, white);
 			for(int move = 0; move < 64; move++){
 				if (movePool & (1LL << move)){
-					BitboardController newBoard = bitboard;
+					BitboardController newBoard;
 					//calculate column and row
-					int col1 = ((piece + 8) % 8);
-					int row1 = (piece / 8);
-					int col2 = ((move + 8) % 8);
-					int row2 = (move / 8);
+					int col1 = ((piece + 8) % 8) + 1;
+					int row1 = (piece / 8) + 1;
+					int col2 = ((move + 8) % 8) + 1;
+					int row2 = (move / 8) + 1;
+					newBoard = bitboard;
 					newBoard.executeMove("", col1, row1, col2, row2);
 					moveList.push_back(newBoard);
 				}
@@ -388,13 +387,12 @@ BitboardController BitboardController::selectMove(bool white, int depth, Bitboar
 		return bestBoard;
 	}
 	else{
-		bestBoard = BitboardController(9999); //sets low boardValue
+		bestBoard = BitboardController(9999); //sets high boardValue
 		for(int i = 0; i < moveList.size(); i++){
 			bestBoard = minBoardValue(bestBoard, bitboard.selectMove(true, depth - 1, moveList[i]));
 		}
 		return bestBoard;
 	}
-
 }
 
 std::string BitboardController::selectMove2() {

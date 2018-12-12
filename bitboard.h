@@ -6,8 +6,9 @@ public:
 
 	void newBoard();
 
-	void printBoard(std::ofstream& file);
+	void printBoard();
 
+	long long findMoves(short piece, bool white);
 	BitboardController selectMove(bool white, int depth, BitboardController board);
 
 	std::string selectMove2();
@@ -23,8 +24,6 @@ private:
 	typedef long long board;
 
 	void updateBoardSets();
-
-	long long findMoves(short piece, bool white);
 
 	//White Pieces
 	board white_pawns;
