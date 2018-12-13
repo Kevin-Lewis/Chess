@@ -18,7 +18,7 @@ int main(){
 	while (std::getline(std::cin, line)) {
 		if (line == "uci") {
 			std::cout << "UA Chess" << std::endl; //Engine Name
-			std::cout << "Kevin Lewis" << std::endl; //Author Name
+			std::cout << "Kevin Lewis and Mack Blaurock" << std::endl; //Author Name
 			std::cout << "uciok" << std::endl; //Enables UCI
 		}
 		else if (line == "quit") {
@@ -47,7 +47,7 @@ int main(){
 			; // nothing
 		}
 		else if (line.substr(0, 3) == "go ") {
-			if(turn == 0){std::cout << "bestmove " << "e2e4" << std::endl; turn = 2;}
+			if(turn == 0){std::cout << "bestmove " << "d2d4" << std::endl; turn = 2;}
 			else if(turn == 1){std::cout << "bestmove " << "e7e5" << std::endl;}
 			else{
 				BitboardController alpha = BitboardController(-999);
