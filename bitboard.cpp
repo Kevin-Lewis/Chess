@@ -350,8 +350,8 @@ long long BitboardController::findMoves(short piece, bool white) {
 		if (row != 7 && column != 0) { movable_squares |= ((1LL << (piece + 7)) & ~(active_color)); }
 		if (row != 7 && column != 7) { movable_squares |= ((1LL << (piece + 9)) & ~(active_color)); }
 		if (row != 0) { movable_squares |= ((1LL << (piece - 8)) & ~(active_color)); }
-		if (row != 0 && column != 0) { movable_squares |= ((1LL << (piece - 7)) & ~(active_color)); }
-		if (row != 0 && column != 7) { movable_squares |= ((1LL << (piece - 9)) & ~(active_color)); }
+		if (row != 0 && column != 7) { movable_squares |= ((1LL << (piece - 7)) & ~(active_color)); }
+		if (row != 0 && column != 0) { movable_squares |= ((1LL << (piece - 9)) & ~(active_color)); }
 		if (column != 7) { movable_squares |= ((1LL << (piece + 1)) & ~(active_color)); }
 		if (column != 0) { movable_squares |= ((1LL << (piece - 1)) & ~(active_color)); }
 	}

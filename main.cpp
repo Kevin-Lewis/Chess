@@ -17,7 +17,7 @@ int main(){
 	
 	while (std::getline(std::cin, line)) {
 		if (line == "uci") {
-			std::cout << "Zip Engine" << std::endl; //Engine Name
+			std::cout << "UA Chess" << std::endl; //Engine Name
 			std::cout << "Kevin Lewis" << std::endl; //Author Name
 			std::cout << "uciok" << std::endl; //Enables UCI
 		}
@@ -48,6 +48,7 @@ int main(){
 		else if (line.substr(0, 3) == "go ") {
 			BitboardController b = controller.selectMove(controller.getColor(), depth, controller);
 			std::string move = b.getMove(depth);
+			b.printBoard();
 			std::cout << "bestmove " << move << std::endl;
 		}
 	}
