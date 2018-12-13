@@ -11,7 +11,7 @@ public:
 	void printBoard();
 
 	long long findMoves(short piece, bool white);
-	BitboardController selectMove(bool white, int depth, BitboardController board);
+	BitboardController selectMove(bool white, int depth, BitboardController board, BitboardController alpha, BitboardController beta);
 
 	void executeMove(std::string move, int col1 = 0, int row1 = 0, int col2 = 0, int row2 = 0);
 

@@ -8,12 +8,12 @@
 //Bitboard Controller Helper Functions
 BitboardController minBoardValue(BitboardController b1, BitboardController b2){
 	BitboardController minBoard;
-	b1.boardSum() < b2.boardSum() ? minBoard = b1 : minBoard = b2;
+	b1.boardSum() <= b2.boardSum() ? minBoard = b1 : minBoard = b2;
 	return minBoard;
 }
 BitboardController maxBoardValue(BitboardController b1, BitboardController b2){
 	BitboardController maxBoard;
-	b1.boardSum() > b2.boardSum() ? maxBoard = b1 : maxBoard = b2;
+	b1.boardSum() >= b2.boardSum() ? maxBoard = b1 : maxBoard = b2;
 	return maxBoard;
 }
 
@@ -362,7 +362,7 @@ long long BitboardController::findMoves(short piece, bool white) {
 }
 
 //Searches for the highest value possible move
-BitboardController BitboardController::selectMove(bool white, int depth, BitboardController bitboard){
+BitboardController BitboardController::selectMove(bool white, int depth, BitboardController bitboard, BitboardController alpha, BitboardController beta){
 	board activeColor;
 	board movePool;
 	white ? activeColor = bitboard.white_pieces : activeColor = bitboard.black_pieces;
@@ -394,16 +394,20 @@ BitboardController BitboardController::selectMove(bool white, int depth, Bitboar
 		}
 	}
 	if(white){
-		bestBoard = BitboardController(-9999); //sets low boardValue
+		bestBoard = BitboardController(-999); //sets low boardValue
 		for(int i = 0; i < moveList.size(); i++){
-			bestBoard = maxBoardValue(bestBoard, bitboard.selectMove(false, depth - 1, moveList[i]));
+			bestBoard = maxBoardValue(bestBoard, bitboard.selectMove(false, depth - 1, moveList[i], alpha, beta));
+			alpha = maxBoardValue(alpha, bestBoard);
+			if(alpha.boardSum() >= beta.boardSum()){break;}
 		}
 		return bestBoard;
 	}
 	else{
-		bestBoard = BitboardController(9999); //sets high boardValue
+		bestBoard = BitboardController(999); //sets high boardValue
 		for(int i = 0; i < moveList.size(); i++){
-			bestBoard = minBoardValue(bestBoard, bitboard.selectMove(true, depth - 1, moveList[i]));
+			bestBoard = minBoardValue(bestBoard, bitboard.selectMove(true, depth - 1, moveList[i], alpha, beta));
+			beta = minBoardValue(beta, bestBoard);
+			if(alpha.boardSum() >= beta.boardSum()){break;}
 		}
 		return bestBoard;
 	}
@@ -429,5 +433,5 @@ std::string BitboardController::getMove(int depth){
 	if(moveHistory.length() >= 4){
 		str = moveHistory.substr((moveHistory.length() - (4 * depth)), 4);
 	}
-	return str; 
+	return str;
 }

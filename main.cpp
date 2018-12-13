@@ -10,7 +10,7 @@ int main(){
 	BitboardController controller;
 	controller.newBoard();
 	std::string line;
-	int depth = 3;
+	int depth = 6;
 	int turn = 0;
 
 	std::cout.setf(std::ios::unitbuf); //Makes sure that the outputs are sent immediately to the GUI
@@ -51,9 +51,14 @@ int main(){
 			if(turn == 0){std::cout << "bestmove " << "e2e4" << std::endl; turn = 2;}
 			else if(turn == 1){std::cout << "bestmove " << "e7e5" << std::endl;}
 			else{
-				BitboardController b = controller.selectMove(controller.getColor(), depth, controller);
+				BitboardController alpha = BitboardController(-999);
+				BitboardController beta = BitboardController(999);
+				BitboardController b = controller.selectMove(controller.getColor(), depth, controller, alpha, beta);
 				std::string move = b.getMove(depth);
 				std::cout << "bestmove " << move << std::endl;
+				std::cout << b.getMove(depth - 1) << std::endl;
+				std::cout << b.getMove(depth - 2) << std::endl;
+				std::cout << b.getMove(depth - 3) << std::endl;
 			}
 		}
 	}
