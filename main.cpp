@@ -11,6 +11,9 @@ int main(){
 	controller.newBoard();
 	std::string line;
 	int depth = 6;
+	int deep = 7;
+	int normal = 6;
+	int shallow = 5;
 	int turn = 0;
 
 	std::cout.setf(std::ios::unitbuf); //Makes sure that the outputs are sent immediately to the GUI
@@ -47,10 +50,12 @@ int main(){
 			; // nothing
 		}
 		else if (line.substr(0, 3) == "go ") {
-			std::cout << "turn: " << turn << std::endl;
-			if(turn == 0){std::cout << "bestmove " << "e2e4" << std::endl; turn = 2;}
-			else if(turn == 1){std::cout << "bestmove " << "e7e5" << std::endl;}
+			if(turn == 0){if(controller.getColor()){std::cout << "bestmove " << "e2e4" << std::endl;}}
+			else if(turn == 1){if(!controller.getColor()){std::cout << "bestmove " << "e7e5" << std::endl;}}
 			else{
+				if(turn < 5){depth = deep;}
+				else if(turn > 25){depth = shallow;}
+				else{depth = normal;}
 				BitboardController alpha = BitboardController(-999);
 				BitboardController beta = BitboardController(999);
 				BitboardController b = controller.selectMove(controller.getColor(), depth, controller, alpha, beta);

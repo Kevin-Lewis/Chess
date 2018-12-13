@@ -388,7 +388,9 @@ BitboardController BitboardController::selectMove(bool white, int depth, Bitboar
 					int row2 = (move / 8) + 1;
 					newBoard = bitboard;
 					newBoard.executeMove("", col1, row1, col2, row2);
-					moveList.push_back(newBoard);
+					if(col2 != recentMove[0] || row2 != recentMove[1]){
+						moveList.push_back(newBoard);
+					}
 				}
 			}
 		}
