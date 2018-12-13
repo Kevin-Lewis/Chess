@@ -296,8 +296,8 @@ long long BitboardController::findMoves(short piece, bool white) {
 		movable_squares |= (1LL << (piece + (8 * colMod)) & ~(all_pieces));
 		if ((1LL << (piece + 7 * colMod) & opposite_color) && !(white && (1LL << piece & COL_A)) && !(!white && (1LL << piece & COL_H))) {movable_squares |= 1LL << (piece + (7 * colMod));}
 		if ((1LL << (piece + 9 * colMod) & opposite_color) && !(white && (1LL << piece & COL_H)) && !(!white && (1LL << piece & COL_A))) {movable_squares |= 1LL << (piece + (9 * colMod));}
-		if ((1LL << (piece + 8 * colMod) & ~(all_pieces)) && (1LL << (piece + 16 * colMod) & ~(all_pieces)) && white && (1LL << piece & ~ROW_2) {movable_squares |= 1LL << (piece + (16 * colMod));}
-		if ((1LL << (piece + 8 * colMod) & ~(all_pieces)) && (1LL << (piece + 16 * colMod) & ~(all_pieces)) && !white && (1LL << piece & ~ROW_7) {movable_squares |= 1LL << (piece + (16 * colMod));}
+		if ((1LL << (piece + 8 * colMod) & ~(all_pieces)) && (1LL << (piece + 16 * colMod) & ~(all_pieces)) && white && (1LL << piece & ROW_2)) {movable_squares |= 1LL << (piece + (16 * colMod));}
+		if ((1LL << (piece + 8 * colMod) & ~(all_pieces)) && (1LL << (piece + 16 * colMod) & ~(all_pieces)) && !white && (1LL << piece & ROW_7)) {movable_squares |= 1LL << (piece + (16 * colMod));}
 	}
 
 	//knights

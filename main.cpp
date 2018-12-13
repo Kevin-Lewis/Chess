@@ -29,6 +29,7 @@ int main(){
 			std::cout << "readyok" << std::endl;
 		}
 		else if (line == "ucinewgame") {
+			turn = 0;
 			controller.newBoard();
 		}
 
@@ -46,10 +47,14 @@ int main(){
 			; // nothing
 		}
 		else if (line.substr(0, 3) == "go ") {
-			BitboardController b = controller.selectMove(controller.getColor(), depth, controller);
-			std::string move = b.getMove(depth);
-			b.printBoard();
-			std::cout << "bestmove " << move << std::endl;
+			std::cout << "turn: " << turn << std::endl;
+			if(turn == 0){std::cout << "bestmove " << "e2e4" << std::endl; turn = 2;}
+			else if(turn == 1){std::cout << "bestmove " << "e7e5" << std::endl;}
+			else{
+				BitboardController b = controller.selectMove(controller.getColor(), depth, controller);
+				std::string move = b.getMove(depth);
+				std::cout << "bestmove " << move << std::endl;
+			}
 		}
 	}
 	return 0;
